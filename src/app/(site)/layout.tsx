@@ -122,48 +122,40 @@ export default function SiteLayout({
         <link rel="icon" href="/icon-192x192.png" sizes="192x192" type="image/png" />
 
         {/* Google Analytics */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-                    page_title: document.title,
-                    page_location: window.location.href,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || ''}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: process.env.NEXT_PUBLIC_GA_ID ? `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                page_title: document.title,
+                page_location: window.location.href,
+              });
+            ` : '',
+          }}
+        />
 
         {/* Google AdSense */}
-        {process.env.NEXT_PUBLIC_ADSENSE_ID && (
-          <>
-            <script
-              async
-              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
-              crossOrigin="anonymous"
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  (adsbygoogle = window.adsbygoogle || []).push({
-                    google_ad_client: "${process.env.NEXT_PUBLIC_ADSENSE_ID}",
-                    enable_page_level_ads: true
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID || ''}`}
+          crossOrigin="anonymous"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: process.env.NEXT_PUBLIC_ADSENSE_ID ? `
+              (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "${process.env.NEXT_PUBLIC_ADSENSE_ID}",
+                enable_page_level_ads: true
+              });
+            ` : '',
+          }}
+        />
       </head>
       <body>
         {/* Enhanced Schema Markup */}
