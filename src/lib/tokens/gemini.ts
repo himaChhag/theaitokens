@@ -1,6 +1,6 @@
 import "server-only";
 import type { CountTokensArgs, CountTokensResult } from "./types";
-import { AutoTokenizer } from "@xenova/transformers";
+import { safeAutoTokenizer } from "./transformers-wrapper";
 
 // Cache tokenizers to avoid reloading
 const tokenizerCache = new Map<string, any>();
@@ -14,14 +14,16 @@ async function getGeminiTokenizer() {
     return tokenizerCache.get(cacheKey);
   }
 
-  try {
-    // Use Gemma tokenizer as it's the closest to Gemini's SentencePiece implementation
-    const tokenizer = await AutoTokenizer.from_pretrained('google/gemma-2b');
-    tokenizerCache.set(cacheKey, tokenizer);
-    return tokenizer;
-  } catch (error) {
-    throw new Error(`Failed to load Gemini tokenizer: ${error}`);
+  // Use safe wrapper to load AutoTokenizer
+  const AutoTokenizer = await safeAutoTokenizer();
+  if (!AutoTokenizer) {
+    throw new Error("AutoTokenizer not available in this environment");
   }
+  
+  // Use Gemma tokenizer as it's the closest to Gemini's SentencePiece implementation
+  const tokenizer = await AutoTokenizer.from_pretrained('google/gemma-2b');
+  tokenizerCache.set(cacheKey, tokenizer);
+  return tokenizer;
 }
 
 /**

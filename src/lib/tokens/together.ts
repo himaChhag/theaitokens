@@ -1,6 +1,6 @@
 import "server-only";
 import type { CountTokensArgs, CountTokensResult } from "./types";
-import { AutoTokenizer } from "@xenova/transformers";
+import { safeAutoTokenizer } from "./transformers-wrapper";
 
 // Cache tokenizers to avoid reloading
 const tokenizerCache = new Map<string, any>();
@@ -14,52 +14,54 @@ async function getTogetherTokenizer(modelId: string) {
     return tokenizerCache.get(cacheKey);
   }
 
-  try {
-    let huggingFaceModel = '';
-    let tokenizerType = '';
-    
-    // LLaMA models (Meta) - detect version for correct tokenizer
-    if (modelId.includes('llama-4') || modelId.includes('llama4')) {
-      huggingFaceModel = 'meta-llama/Meta-Llama-3-8B'; // Use LLaMA 3 tokenizer as base for LLaMA 4
-      tokenizerType = 'LLaMA 4 (Multimodal SentencePiece BPE, 200+ languages)';
-    } else if (modelId.includes('llama-3') || modelId.includes('llama3')) {
-      huggingFaceModel = 'meta-llama/Meta-Llama-3-8B';
-      tokenizerType = 'LLaMA 3+ (Tiktoken-based, 128K vocab)';
-    } else if (modelId.includes('llama-2') || modelId.includes('llama2') || modelId.includes('llama')) {
-      huggingFaceModel = 'meta-llama/Llama-2-7b-hf';
-      tokenizerType = 'LLaMA 2 (SentencePiece, 32K vocab)';
-    }
-    // Qwen models (Alibaba) - optimized for multilingual/Asian languages
-    else if (modelId.includes('qwen')) {
-      huggingFaceModel = 'Qwen/Qwen2-7B';
-      tokenizerType = 'Qwen (multilingual optimized)';
-    }
-    // DeepSeek models - optimized for code and technical content
-    else if (modelId.includes('deepseek')) {
-      huggingFaceModel = 'deepseek-ai/deepseek-coder-6.7b-base';
-      tokenizerType = 'DeepSeek (code-optimized)';
-    }
-    // Mistral models - BPE variants
-    else if (modelId.includes('mistral')) {
-      huggingFaceModel = 'mistralai/Mistral-7B-v0.1';
-      tokenizerType = 'Mistral (SentencePiece BPE)';
-    }
-    // Gemma models (Google)
-    else if (modelId.includes('gemma')) {
-      huggingFaceModel = 'google/gemma-2b';
-      tokenizerType = 'Gemma (SentencePiece)';
-    }
-    // Default fallback
-    else {
-      throw new Error(`Unknown model type: ${modelId}`);
-    }
-    
-    const tokenizer = await AutoTokenizer.from_pretrained(huggingFaceModel);
-    tokenizerCache.set(cacheKey, { tokenizer, tokenizerType });
-    return { tokenizer, tokenizerType };
-  } catch (error) {
-    throw new Error(`Failed to load tokenizer for Together AI model ${modelId}: ${error}`);
+  // Use safe wrapper to load AutoTokenizer
+  const AutoTokenizer = await safeAutoTokenizer();
+  if (!AutoTokenizer) {
+    throw new Error("AutoTokenizer not available in this environment");
   }
+  
+  let huggingFaceModel = '';
+  let tokenizerType = '';
+  
+  // LLaMA models (Meta) - detect version for correct tokenizer
+  if (modelId.includes('llama-4') || modelId.includes('llama4')) {
+    huggingFaceModel = 'meta-llama/Meta-Llama-3-8B'; // Use LLaMA 3 tokenizer as base for LLaMA 4
+    tokenizerType = 'LLaMA 4 (Multimodal SentencePiece BPE, 200+ languages)';
+  } else if (modelId.includes('llama-3') || modelId.includes('llama3')) {
+    huggingFaceModel = 'meta-llama/Meta-Llama-3-8B';
+    tokenizerType = 'LLaMA 3+ (Tiktoken-based, 128K vocab)';
+  } else if (modelId.includes('llama-2') || modelId.includes('llama2') || modelId.includes('llama')) {
+    huggingFaceModel = 'meta-llama/Llama-2-7b-hf';
+    tokenizerType = 'LLaMA 2 (SentencePiece, 32K vocab)';
+  }
+  // Qwen models (Alibaba) - optimized for multilingual/Asian languages
+  else if (modelId.includes('qwen')) {
+    huggingFaceModel = 'Qwen/Qwen2-7B';
+    tokenizerType = 'Qwen (multilingual optimized)';
+  }
+  // DeepSeek models - optimized for code and technical content
+  else if (modelId.includes('deepseek')) {
+    huggingFaceModel = 'deepseek-ai/deepseek-coder-6.7b-base';
+    tokenizerType = 'DeepSeek (code-optimized)';
+  }
+  // Mistral models - BPE variants
+  else if (modelId.includes('mistral')) {
+    huggingFaceModel = 'mistralai/Mistral-7B-v0.1';
+    tokenizerType = 'Mistral (SentencePiece BPE)';
+  }
+  // Gemma models (Google)
+  else if (modelId.includes('gemma')) {
+    huggingFaceModel = 'google/gemma-2b';
+    tokenizerType = 'Gemma (SentencePiece)';
+  }
+  // Default fallback
+  else {
+    throw new Error(`Unknown model type: ${modelId}`);
+  }
+  
+  const tokenizer = await AutoTokenizer.from_pretrained(huggingFaceModel);
+  tokenizerCache.set(cacheKey, { tokenizer, tokenizerType });
+  return { tokenizer, tokenizerType };
 }
 
 /**

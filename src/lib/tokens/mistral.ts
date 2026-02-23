@@ -1,6 +1,6 @@
 import "server-only";
 import type { CountTokensArgs, CountTokensResult } from "./types";
-import { AutoTokenizer } from "@xenova/transformers";
+import { safeAutoTokenizer } from "./transformers-wrapper";
 
 // Cache tokenizers to avoid reloading
 const tokenizerCache = new Map<string, any>();
@@ -14,14 +14,16 @@ async function getMistralTokenizer() {
     return tokenizerCache.get(cacheKey);
   }
 
-  try {
-    // Use Mistral 7B tokenizer as the standard for all Mistral models
-    const tokenizer = await AutoTokenizer.from_pretrained('mistralai/Mistral-7B-v0.1');
-    tokenizerCache.set(cacheKey, tokenizer);
-    return tokenizer;
-  } catch (error) {
-    throw new Error(`Failed to load Mistral tokenizer: ${error}`);
+  // Use safe wrapper to load AutoTokenizer
+  const AutoTokenizer = await safeAutoTokenizer();
+  if (!AutoTokenizer) {
+    throw new Error("AutoTokenizer not available in this environment");
   }
+  
+  // Use Mistral 7B tokenizer as the standard for all Mistral models
+  const tokenizer = await AutoTokenizer.from_pretrained('mistralai/Mistral-7B-v0.1');
+  tokenizerCache.set(cacheKey, tokenizer);
+  return tokenizer;
 }
 
 /**

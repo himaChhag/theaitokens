@@ -1,6 +1,6 @@
 import "server-only";
 import type { CountTokensArgs, CountTokensResult } from "./types";
-import { AutoTokenizer } from "@xenova/transformers";
+import { safeAutoTokenizer } from "./transformers-wrapper";
 
 // Cache tokenizers to avoid reloading
 const tokenizerCache = new Map<string, any>();
@@ -20,27 +20,29 @@ async function getLlamaTokenizer(modelId: string) {
     return tokenizerCache.get(cacheKey);
   }
 
-  try {
-    let huggingFaceModel;
-    
-    if (isLlama4) {
-      // LLaMA 4 uses specialized multimodal SentencePiece BPE tokenizer
-      // Use LLaMA 3 as base since LLaMA 4 tokenizer may not be available yet
-      huggingFaceModel = 'meta-llama/Meta-Llama-3-8B';
-    } else if (isLlama3Plus) {
-      // LLaMA 3/3.1/3.2 use custom Tiktoken-based tokenizer
-      huggingFaceModel = 'meta-llama/Meta-Llama-3-8B';
-    } else {
-      // LLaMA 2 uses SentencePiece
-      huggingFaceModel = 'meta-llama/Llama-2-7b-hf';
-    }
-    
-    const tokenizer = await AutoTokenizer.from_pretrained(huggingFaceModel);
-    tokenizerCache.set(cacheKey, tokenizer);
-    return { tokenizer, isLlama3Plus, isLlama4 };
-  } catch (error) {
-    throw new Error(`Failed to load LLaMA tokenizer: ${error}`);
+  // Use safe wrapper to load AutoTokenizer
+  const AutoTokenizer = await safeAutoTokenizer();
+  if (!AutoTokenizer) {
+    throw new Error("AutoTokenizer not available in this environment");
   }
+  
+  let huggingFaceModel;
+  
+  if (isLlama4) {
+    // LLaMA 4 uses specialized multimodal SentencePiece BPE tokenizer
+    // Use LLaMA 3 as base since LLaMA 4 tokenizer may not be available yet
+    huggingFaceModel = 'meta-llama/Meta-Llama-3-8B';
+  } else if (isLlama3Plus) {
+    // LLaMA 3/3.1/3.2 use custom Tiktoken-based tokenizer
+    huggingFaceModel = 'meta-llama/Meta-Llama-3-8B';
+  } else {
+    // LLaMA 2 uses SentencePiece
+    huggingFaceModel = 'meta-llama/Llama-2-7b-hf';
+  }
+  
+  const tokenizer = await AutoTokenizer.from_pretrained(huggingFaceModel);
+  tokenizerCache.set(cacheKey, tokenizer);
+  return { tokenizer, isLlama3Plus, isLlama4 };
 }
 
 /**
