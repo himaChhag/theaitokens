@@ -114,6 +114,13 @@ export default function SiteLayout({
         <link rel="dns-prefetch" href="https://api.theaitokens.com" />
         <meta name="format-detection" content="telephone=no" />
 
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
+        <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/icon-192x192.png" sizes="192x192" type="image/png" />
+
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
