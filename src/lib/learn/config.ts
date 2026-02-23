@@ -66,14 +66,52 @@ export const LEARN_ARTICLES: LearnArticle[] = [
       { type: "heading", level: 2, text: "Token Counting Methods" },
       { 
         type: "paragraph", 
-        text: "Each AI provider uses their own tokenization approach:" 
+        text: "Each AI provider uses specific tokenization algorithms optimized for their models:" 
       },
       { 
         type: "list", 
         items: [
-          "OpenAI: Uses tiktoken library with model-specific encodings",
-          "Anthropic: Claude models use their own tokenization system",
-          "Google: Gemini models have unique token counting rules"
+          "OpenAI: Uses tiktoken library with Byte-Pair Encoding (BPE) - cl100k_base encoding for GPT-4/4o/3.5",
+          "Anthropic: Official @anthropic-ai/tokenizer package for exact Claude token counting",
+          "Google Gemini: SentencePiece tokenizer optimized for multilingual content (~3.5-4 chars/token)",
+          "Meta LLaMA: SentencePiece (LLaMA 2), Tiktoken-based (LLaMA 3+), Multimodal BPE (LLaMA 4)",
+          "Mistral: SentencePiece optimized for byte-level processing",
+          "Others: Algorithm-aware estimation based on model-specific patterns"
+        ]
+      },
+      { type: "heading", level: 2, text: "Tokenization Algorithms Explained" },
+      { 
+        type: "paragraph", 
+        text: "Modern AI models use three main tokenization approaches:" 
+      },
+      { type: "heading", level: 3, text: "Byte-Pair Encoding (BPE)" },
+      { 
+        type: "list", 
+        items: [
+          "Used by OpenAI GPT models via tiktoken library",
+          "Merges frequent character pairs to create subwords",
+          "Excellent for handling rare words and consistent vocabulary",
+          "Most accurate when using official tiktoken implementation"
+        ]
+      },
+      { type: "heading", level: 3, text: "SentencePiece" },
+      { 
+        type: "list", 
+        items: [
+          "Used by Google Gemini, Meta LLaMA, Mistral models",
+          "Language-independent, handles multilingual text uniformly",
+          "Treats text as Unicode character sequences",
+          "Implemented via @xenova/transformers library"
+        ]
+      },
+      { type: "heading", level: 3, text: "WordPiece" },
+      { 
+        type: "list", 
+        items: [
+          "Used by Google BERT models",
+          "Builds subwords by maximizing training data likelihood",
+          "Good at handling morphological variations",
+          "Less common in modern large language models"
         ]
       },
       { type: "heading", level: 2, text: "Best Practices" },
@@ -717,263 +755,175 @@ LEARN_ARTICLES.push(
       { type: "heading", level: 3, text: "SentencePiece" },
       { 
         type: "paragraph", 
-        text: "SentencePiece is a language-independent subword tokenizer that treats text as a sequence of Unicode characters. It doesn't require pre-tokenization and can handle any language without spaces between words." 
+        text: "SentencePiece is a language-independent subword tokenizer that treats text as a sequence of Unicode characters. It's particularly effective for multilingual models and handles various languages uniformly." 
       },
       { 
         type: "list", 
         items: [
-          "Used by: Google Gemini, Meta LLaMA, Mistral, T5, XLM-RoBERTa",
-          "Strengths: Language-agnostic, no pre-tokenization needed",
-          "Characteristics: Unicode-based, handles multilingual text excellently",
-          "Implementation: @xenova/transformers, sentencepiece-js"
+          "Used by: Google Gemini, Meta LLaMA, Mistral, T5 models",
+          "Strengths: Language-independent, handles multilingual text well",
+          "Characteristics: Unigram language model, byte-level processing",
+          "Implementation: @xenova/transformers library"
         ]
       },
       { type: "heading", level: 3, text: "WordPiece" },
       { 
         type: "paragraph", 
-        text: "WordPiece is similar to BPE but uses a different merging criterion based on likelihood maximization. It was developed by Google and is primarily used in BERT-family models." 
+        text: "WordPiece is Google's tokenization algorithm that builds subwords by maximizing the likelihood of the training data. It's particularly effective for understanding word relationships and morphology." 
       },
       { 
         type: "list", 
         items: [
-          "Used by: Google BERT, some older Google models",
-          "Strengths: Good balance between vocabulary size and coverage",
-          "Characteristics: Subword tokenization with ## continuation markers",
-          "Implementation: @xenova/transformers AutoTokenizer"
+          "Used by: Google BERT models, some older Google models",
+          "Strengths: Good at handling morphological variations",
+          "Characteristics: Greedy longest-match-first algorithm",
+          "Implementation: @xenova/transformers library"
         ]
       },
-      { type: "heading", level: 2, text: "Tokenizer by AI Model" },
+      { type: "heading", level: 2, text: "Tokenizer by AI Provider" },
       { type: "heading", level: 3, text: "OpenAI Models" },
       { 
         type: "paragraph", 
-        text: "OpenAI uses tiktoken, their custom implementation of Byte-Pair Encoding with specific encodings for different model generations:" 
+        text: "OpenAI uses tiktoken, their implementation of Byte-Pair Encoding (BPE):" 
       },
       {
         type: "table",
-        headers: ["Model", "Tokenizer", "Encoding", "Implementation"],
+        headers: ["Model", "Tokenizer", "Encoding", "Vocabulary Size"],
         rows: [
-          ["GPT-4, GPT-4o, GPT-3.5-turbo", "tiktoken", "cl100k_base", "Exact"],
-          ["GPT-3, text-davinci-003", "tiktoken", "p50k_base", "Exact"],
-          ["GPT-2", "tiktoken", "r50k_base", "Exact"],
-          ["o3, o3-mini", "tiktoken", "cl100k_base", "Exact"]
+          ["GPT-4, GPT-4o, GPT-3.5", "tiktoken BPE", "cl100k_base", "100K tokens"],
+          ["GPT-3, text-davinci-003", "tiktoken BPE", "p50k_base", "50K tokens"],
+          ["GPT-2", "tiktoken BPE", "r50k_base", "50K tokens"]
         ]
       },
       { 
         type: "callout", 
         variant: "tip", 
-        text: "Use the tiktoken npm package for exact OpenAI token counting. It's the same library OpenAI uses internally." 
-      },
-      { type: "heading", level: 3, text: "Anthropic Claude Models" },
-      { 
-        type: "paragraph", 
-        text: "Anthropic uses a proprietary tokenizer for Claude models, but provides an official tokenizer package:" 
-      },
-      {
-        type: "table",
-        headers: ["Model", "Tokenizer", "Implementation", "Package"],
-        rows: [
-          ["Claude 3 Opus", "Anthropic proprietary", "Exact", "@anthropic-ai/tokenizer"],
-          ["Claude 3 Sonnet", "Anthropic proprietary", "Exact", "@anthropic-ai/tokenizer"],
-          ["Claude 3 Haiku", "Anthropic proprietary", "Exact", "@anthropic-ai/tokenizer"],
-          ["Claude 4.6 series", "Anthropic proprietary", "Exact", "@anthropic-ai/tokenizer"]
-        ]
-      },
-      { 
-        type: "callout", 
-        variant: "info", 
-        text: "Claude's tokenizer accounts for message formatting and system prompts, which can affect final billing token counts." 
+        text: "Use the tiktoken library for exact OpenAI token counting. It's the same tokenizer used by OpenAI's servers." 
       },
       { type: "heading", level: 3, text: "Google Models" },
       { 
         type: "paragraph", 
-        text: "Google uses different tokenizers across their model families:" 
+        text: "Google uses different tokenizers for different model families:" 
       },
       {
         type: "table",
-        headers: ["Model Family", "Tokenizer", "Implementation", "Notes"],
+        headers: ["Model Family", "Tokenizer", "Characteristics"],
         rows: [
-          ["Gemini (all versions)", "SentencePiece", "Exact via @xenova/transformers", "Language-agnostic"],
-          ["Gemma", "SentencePiece", "Exact via @xenova/transformers", "Open weights available"],
-          ["T5", "SentencePiece", "Exact via @xenova/transformers", "Text-to-text format"],
-          ["BERT", "WordPiece", "Exact via @xenova/transformers", "Legacy but still used"]
+          ["Gemini Pro/Flash", "SentencePiece", "Multilingual, ~3.5-4 chars/token"],
+          ["BERT models", "WordPiece", "Subword-based, morphology-aware"],
+          ["T5 models", "SentencePiece", "Text-to-text unified framework"]
         ]
       },
       { type: "heading", level: 3, text: "Meta LLaMA Models" },
       { 
         type: "paragraph", 
-        text: "All LLaMA model versions use SentencePiece tokenization:" 
+        text: "Meta's LLaMA models use different tokenizers across versions:" 
       },
       {
         type: "table",
-        headers: ["Model", "Tokenizer", "Vocabulary Size", "Implementation"],
+        headers: ["Model Version", "Tokenizer", "Vocabulary", "Characteristics"],
         rows: [
-          ["LLaMA 2 (7B, 13B, 70B)", "SentencePiece", "32K tokens", "Exact via @xenova/transformers"],
-          ["LLaMA 3 (8B, 70B)", "SentencePiece", "128K tokens", "Exact via @xenova/transformers"],
-          ["LLaMA 3.1 (8B, 70B, 405B)", "SentencePiece", "128K tokens", "Exact via @xenova/transformers"],
-          ["LLaMA 4 Scout (109B)", "SentencePiece BPE", "10M tokens", "Exact via @xenova/transformers"],
-          ["LLaMA 4 Maverick (400B)", "SentencePiece BPE", "1M tokens", "Exact via @xenova/transformers"]
+          ["LLaMA 2", "SentencePiece", "32K tokens", "Standard SentencePiece"],
+          ["LLaMA 3/3.1/3.2", "Custom Tiktoken-based", "128K tokens", "More efficient tokenization"],
+          ["LLaMA 4", "Multimodal SentencePiece BPE", "200+ languages", "Optimized for multimodal content"]
         ]
       },
-      { 
-        type: "callout", 
-        variant: "warning", 
-        text: "LLaMA 3+ models have significantly larger vocabularies (128K vs 32K tokens), which affects tokenization efficiency." 
-      },
-      { type: "heading", level: 3, text: "Mistral Models" },
+      { type: "heading", level: 3, text: "Anthropic Claude" },
       { 
         type: "paragraph", 
-        text: "Mistral models use SentencePiece with optimizations for byte-level processing:" 
+        text: "Anthropic provides an official tokenizer for Claude models:" 
       },
-      {
-        type: "table",
-        headers: ["Model", "Tokenizer", "Characteristics", "Implementation"],
-        rows: [
-          ["Mistral 7B", "SentencePiece", "Byte-level optimized", "Exact via @xenova/transformers"],
-          ["Mixtral 8x7B", "SentencePiece", "Mixture of experts", "Exact via @xenova/transformers"],
-          ["Mistral Large/Medium/Small", "SentencePiece", "API-only models", "Exact via @xenova/transformers"]
+      { 
+        type: "list", 
+        items: [
+          "Uses @anthropic-ai/tokenizer package for exact counting",
+          "Proprietary tokenization algorithm optimized for safety",
+          "Consistent across all Claude model versions",
+          "Includes special handling for system messages and tool calls"
         ]
       },
       { type: "heading", level: 2, text: "Implementation Guide" },
-      { type: "heading", level: 3, text: "Setting Up Tokenizers" },
-      { 
-        type: "paragraph", 
-        text: "Here's how to implement accurate tokenization for each model type:" 
-      },
-      { 
-        type: "code", 
-        language: "bash",
-        code: `# Install required packages
-npm install tiktoken @anthropic-ai/tokenizer @xenova/transformers`
-      },
-      { type: "heading", level: 3, text: "OpenAI Tokenization" },
+      { type: "heading", level: 3, text: "OpenAI with tiktoken" },
       { 
         type: "code", 
         language: "javascript",
         code: `import { encoding_for_model } from 'tiktoken';
 
-// For GPT-4, GPT-4o, GPT-3.5-turbo
-const enc = encoding_for_model('gpt-4o');
-const tokens = enc.encode('Hello, world!');
-console.log('Token count:', tokens.length);
-enc.free(); // Important: free memory`
-      },
-      { type: "heading", level: 3, text: "Anthropic Tokenization" },
-      { 
-        type: "code", 
-        language: "javascript",
-        code: `import { countTokens } from '@anthropic-ai/tokenizer';
+// Get the appropriate encoding for your model
+const encoding = encoding_for_model('gpt-4o');
 
-// For all Claude models
-const tokenCount = await countTokens('Hello, world!');
-console.log('Token count:', tokenCount);`
+// Count tokens
+const tokens = encoding.encode('Your text here');
+console.log(\`Token count: \${tokens.length}\`);
+
+// Don't forget to free the encoding
+encoding.free();`
       },
-      { type: "heading", level: 3, text: "SentencePiece Models (Gemini, LLaMA, Mistral)" },
+      { type: "heading", level: 3, text: "Google Models with Transformers.js" },
       { 
         type: "code", 
         language: "javascript",
         code: `import { AutoTokenizer } from '@xenova/transformers';
 
-// For Gemini models
+// Load the appropriate tokenizer
 const tokenizer = await AutoTokenizer.from_pretrained('google/gemma-2b');
-const tokens = await tokenizer.encode('Hello, world!');
-console.log('Token count:', tokens.length);
 
-// For LLaMA models
-const llamaTokenizer = await AutoTokenizer.from_pretrained('meta-llama/Llama-2-7b-hf');
-const llamaTokens = await llamaTokenizer.encode('Hello, world!');
-console.log('LLaMA token count:', llamaTokens.length);`
+// Count tokens
+const tokens = await tokenizer.encode('Your text here');
+console.log(\`Token count: \${tokens.length}\`);`
       },
-      { type: "heading", level: 2, text: "Tokenization Differences and Implications" },
-      { type: "heading", level: 3, text: "Token Count Variations" },
+      { type: "heading", level: 3, text: "Anthropic Claude" },
       { 
-        type: "paragraph", 
-        text: "The same text can produce different token counts across models due to different tokenizers and vocabularies:" 
+        type: "code", 
+        language: "javascript",
+        code: `import { countTokens } from '@anthropic-ai/tokenizer';
+
+// Count tokens directly
+const tokenCount = countTokens('Your text here');
+console.log(\`Token count: \${tokenCount}\`);`
       },
-      {
-        type: "table",
-        headers: ["Text", "GPT-4o", "Claude", "Gemini", "LLaMA 3"],
-        rows: [
-          ["'Hello, world!'", "4 tokens", "4 tokens", "5 tokens", "4 tokens"],
-          ["'Tokenization'", "2 tokens", "2 tokens", "3 tokens", "2 tokens"],
-          ["'🤖 AI is amazing!'", "6 tokens", "7 tokens", "8 tokens", "7 tokens"]
-        ]
-      },
-      { type: "heading", level: 3, text: "Language-Specific Considerations" },
-      { 
-        type: "list", 
-        items: [
-          "English: Most tokenizers are optimized for English, producing efficient tokenization",
-          "Chinese/Japanese: SentencePiece models (Gemini, LLaMA) handle these better than BPE",
-          "Code: tiktoken (OpenAI) is particularly efficient for programming languages",
-          "Multilingual: SentencePiece excels at mixed-language content",
-          "Special characters: Different handling across tokenizers affects token counts"
-        ]
-      },
-      { type: "heading", level: 2, text: "Best Practices for Token Counting" },
+      { type: "heading", level: 2, text: "Tokenization Best Practices" },
       { 
         type: "list", 
         items: [
           "Always use the official tokenizer for the specific model you're targeting",
-          "Test tokenization with your actual content, not just sample text",
-          "Account for system messages and formatting in your token calculations",
-          "Consider caching tokenization results for repeated content",
-          "Monitor token usage patterns to optimize your prompts",
-          "Implement fallback estimation for models without available tokenizers"
+          "Test tokenization with your actual use case text, not just simple examples",
+          "Account for special tokens (system messages, function calls, etc.)",
+          "Consider caching tokenizers to avoid repeated loading overhead",
+          "Implement fallback estimation for models without official tokenizers",
+          "Monitor token usage patterns to optimize your prompts and reduce costs"
         ]
       },
-      { type: "heading", level: 2, text: "Troubleshooting Common Issues" },
-      { type: "heading", level: 3, text: "Memory Management" },
-      { 
-        type: "paragraph", 
-        text: "Tokenizers can consume significant memory, especially @xenova/transformers:" 
-      },
+      { type: "heading", level: 2, text: "Common Tokenization Pitfalls" },
       { 
         type: "list", 
         items: [
-          "Always call enc.free() after using tiktoken encoders",
-          "Cache tokenizer instances for @xenova/transformers to avoid reloading",
-          "Consider using worker threads for heavy tokenization workloads",
-          "Monitor memory usage in production applications"
-        ]
-      },
-      { type: "heading", level: 3, text: "Model Availability" },
-      { 
-        type: "paragraph", 
-        text: "Some models may not be available in @xenova/transformers:" 
-      },
-      { 
-        type: "list", 
-        items: [
-          "Use fallback models (e.g., gemma-2b for Gemini models)",
-          "Implement estimation algorithms for unavailable tokenizers",
-          "Check Hugging Face model hub for compatible tokenizers",
-          "Consider using API-based tokenization for proprietary models"
+          "Using character count / 4 estimation - this can be 30-50% inaccurate",
+          "Assuming all models tokenize the same way - each has unique patterns",
+          "Forgetting about special tokens and formatting overhead",
+          "Not accounting for different input/output tokenization in chat models",
+          "Using outdated tokenizer versions that don't match current model versions"
         ]
       },
       { 
         type: "callout", 
-        variant: "tip", 
-        text: "Keep tokenizer libraries updated as new models and optimizations are released frequently." 
+        variant: "warning", 
+        text: "Token counting accuracy directly impacts cost prediction. Always use the most accurate method available for your target model." 
       },
-      { type: "heading", level: 2, text: "Future of AI Tokenization" },
+      { type: "heading", level: 2, text: "Future of Tokenization" },
       { 
         type: "paragraph", 
-        text: "Tokenization continues to evolve with new approaches being developed:" 
+        text: "Tokenization continues to evolve with new approaches emerging:" 
       },
       { 
         type: "list", 
         items: [
-          "Multimodal tokenization for images, audio, and video",
-          "More efficient algorithms reducing token counts",
-          "Language-specific optimizations for better compression",
-          "Dynamic vocabularies that adapt to content",
+          "Multimodal tokenizers that handle text, images, and audio uniformly",
+          "More efficient algorithms that reduce token counts for the same content",
+          "Language-specific optimizations for better multilingual support",
+          "Dynamic tokenization that adapts to content type and context",
           "Integration with model architectures for end-to-end optimization"
         ]
-      },
-      { 
-        type: "callout", 
-        variant: "info", 
-        text: "Stay updated with tokenization developments as they directly impact API costs and model performance." 
       }
     ]
   },

@@ -6,12 +6,13 @@ A comprehensive AI token counter and cost calculator supporting 45+ models from 
 
 ## ✨ Features
 
-- **Token Counter**: Accurate token counting using provider-native tokenizers
-- **Cost Calculator**: Real-time cost calculations with verified pricing data
+- **Accurate Token Counter**: Uses official tokenizers (tiktoken, SentencePiece, WordPiece) for precise counting
+- **Real-time Cost Calculator**: Live cost calculations with up-to-date pricing data
 - **Model Comparison**: Side-by-side comparisons of AI models and pricing
 - **45+ AI Models**: Support for models from OpenAI, Anthropic, Google, Meta, xAI, Cohere, and more
+- **Advanced Tokenization**: Supports BPE, SentencePiece, WordPiece algorithms across all providers
 - **Budget Planning**: Tools to help optimize AI usage and costs
-- **Educational Resources**: Comprehensive guides about AI tokens and pricing
+- **Educational Resources**: Comprehensive guides about AI tokens, tokenizers, and pricing
 
 ## 🤖 Supported Providers
 
@@ -107,23 +108,47 @@ src/
 
 ## 🔧 Key Features Implementation
 
-### Token Counting
+### Advanced Tokenization
 
-- Uses provider-native tokenizers for maximum accuracy
-- Supports text, chat, and completion formats
-- Real-time counting as you type
+Our implementation uses the exact tokenization algorithms that each AI provider uses:
+
+**Byte-Pair Encoding (BPE)**
+- **OpenAI models**: Uses `tiktoken` library with `cl100k_base` encoding for GPT-4, GPT-3.5
+- **Meta LLaMA 4**: Specialized multimodal SentencePiece BPE (supports 200+ languages)
+
+**SentencePiece/Unigram**
+- **Google Gemini**: SentencePiece tokenizer via `@xenova/transformers`
+- **Meta LLaMA 2/3**: SentencePiece with vocabulary sizes (32K for LLaMA 2, 128K for LLaMA 3+)
+- **Mistral models**: SentencePiece optimized for byte-level processing
+- **T5 models**: Standard SentencePiece implementation
+
+**WordPiece**
+- **Google BERT**: WordPiece tokenizer for BERT-based models
+
+**Provider-Specific**
+- **Anthropic Claude**: Official `@anthropic-ai/tokenizer` for exact counting
+- **Others**: Algorithm-aware estimation with model-specific optimizations
+
+### Token Counting Accuracy
+
+- **Exact counting** where official tokenizers are available
+- **Near-exact estimation** using algorithm-specific patterns
+- **Intelligent fallbacks** with confidence indicators
+- **Real-time processing** as you type
 
 ### Cost Calculation
 
 - Up-to-date pricing from official sources
 - Input/output token differentiation
 - Bulk pricing and volume discounts
+- Multimodal content pricing (images, audio, video)
 
 ### Model Comparison
 
 - Side-by-side feature comparison
 - Performance benchmarks
 - Cost-effectiveness analysis
+- Tokenization method comparison
 
 ## 📚 Official Sources & Verification
 
