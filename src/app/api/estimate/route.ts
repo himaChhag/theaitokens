@@ -15,9 +15,13 @@ type Body = {
 };
 
 export async function POST(req: Request) {
+  // Add debugging for production
+  console.log("API /estimate POST called at:", new Date().toISOString());
+  
   // Ensure we always return JSON (prevents client JSON.parse failures)
   const ct = req.headers.get("content-type") || "";
   if (!ct.includes("application/json")) {
+    console.log("Invalid content-type:", ct);
     return NextResponse.json(
       { ok: false as const, error: "Content-Type must be application/json" },
       { status: 415 }
@@ -27,7 +31,9 @@ export async function POST(req: Request) {
   let b: Body;
   try {
     b = (await req.json()) as Body;
-  } catch {
+    console.log("Request body parsed:", { provider: b.provider, modelId: b.modelId, promptLength: b.prompt?.length });
+  } catch (error) {
+    console.log("JSON parse error:", error);
     return NextResponse.json(
       { ok: false as const, error: "Invalid JSON body" },
       { status: 400 }
