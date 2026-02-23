@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "theaitokens — Token Counter & Cost Calculator",
@@ -35,6 +36,7 @@ export default function SiteLayout({
         <Header />
         {children}
         <Footer />
+        <Analytics />
       </body>
     </html>
   );

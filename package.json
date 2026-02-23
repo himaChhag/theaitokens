@@ -13,6 +13,7 @@
     "@anthropic-ai/sdk": "^0.78.0",
     "@anthropic-ai/tokenizer": "^0.0.4",
     "@google/generative-ai": "^0.24.1",
+    "@vercel/analytics": "^1.6.1",
     "next": "16.1.6",
     "openai": "^6.22.0",
     "puppeteer": "^24.37.5",
