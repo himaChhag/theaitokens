@@ -1,0 +1,36 @@
+import Container from "@/src/components/layout/Container";
+import Sidebar from "@/src/components/layout/Sidebar";
+import Estimator from "@/src/components/estimator/Estimator";
+
+export default function Home() {
+  return (
+    <main>
+      <Container>
+        <div style={{ padding: "26px 0 10px" }}>
+          <h1 style={{ fontSize: 38, margin: 0, letterSpacing: -0.6 }}>Token Counter & Cost Estimator</h1>
+          <p style={{ marginTop: 10, maxWidth: 760, opacity: 0.8, lineHeight: 1.5 }}>
+            Uses provider-native token counters and only verified pricing. Models remain disabled until pricing is confirmed.
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: 14,
+            alignItems: "start",
+          }}
+        >
+          <div style={{ display: "grid", gap: 14 }}>
+            <Estimator />
+          </div>
+
+          {/* Sidebar shows under content on mobile; you can change to 2 columns in Part 2 */}
+          <div style={{ marginTop: 6 }}>
+            <Sidebar />
+          </div>
+        </div>
+      </Container>
+    </main>
+  );
+}

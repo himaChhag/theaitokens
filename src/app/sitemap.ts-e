@@ -1,0 +1,19 @@
+import type { MetadataRoute } from "next";
+import { CATALOG } from "@/src/lib/catalog";
+
+const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const staticRoutes = [
+    "",
+    "/tools/token-counter",
+    "/tools/cost-calculator",
+  ].map((p) => ({ url: `${base}${p}`, lastModified: new Date() }));
+
+  const modelRoutes = CATALOG.map((m) => ({
+    url: `${base}/models/${m.provider}/${m.slug}`,
+    lastModified: new Date(m.lastVerified),
+  }));
+
+  return [...staticRoutes, ...modelRoutes];
+}

@@ -1,0 +1,29 @@
+import Container from "@/src/components/layout/Container";
+import Sidebar from "@/src/components/layout/Sidebar";
+import Estimator from "@/src/components/estimator/Estimator";
+import { findModelByProviderAndSlug } from "@/src/lib/catalog";
+import type { Provider } from "@/src/lib/catalog/types";
+
+export default function ModelPage({ params }: { params: { provider: Provider; slug: string } }) {
+  const model = findModelByProviderAndSlug(params.provider, params.slug);
+
+  return (
+    <main>
+      <Container>
+        <div style={{ padding: "22px 0 10px" }}>
+          <h1 style={{ fontSize: 30, margin: 0 }}>
+            {model.name} Token Counter & Cost Calculator
+          </h1>
+          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+            Official pricing source: <a href={model.officialSourceUrl} target="_blank" rel="noreferrer">verified</a>. Verified on {model.lastVerified}.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gap: 14 }}>
+          <Estimator defaultProvider={model.provider} defaultModelId={model.id} />
+          <Sidebar />
+        </div>
+      </Container>
+    </main>
+  );
+}

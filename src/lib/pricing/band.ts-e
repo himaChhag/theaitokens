@@ -1,0 +1,16 @@
+import type { PricingBand } from "@/src/lib/catalog/types";
+
+export function pickBand(bands: PricingBand[], inputTokens: number): PricingBand {
+  if (!bands?.length) throw new Error("Pricing not configured for this model.");
+
+  // Prefer the first band that matches maxInputTokens
+  const withMax = bands.filter(b => typeof b.maxInputTokens === "number");
+  const sorted = withMax.sort((a, b) => (a.maxInputTokens! - b.maxInputTokens!));
+
+  for (const b of sorted) {
+    if (inputTokens <= (b.maxInputTokens as number)) return b;
+  }
+
+  // Otherwise use last band (catch-all)
+  return bands[bands.length - 1];
+}

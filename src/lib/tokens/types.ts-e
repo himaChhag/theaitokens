@@ -1,0 +1,12 @@
+import type { Provider } from "@/src/lib/catalog/types";
+
+export type CountTokensArgs = {
+  provider: Provider;
+  modelId: string;
+  prompt: string;
+};
+
+export type CountTokensResult = {
+  inputTokens: number;
+  // Some providers may also return extra meta later; keep extensible.
+};

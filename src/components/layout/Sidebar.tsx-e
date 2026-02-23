@@ -1,0 +1,13 @@
+import SponsorCard from "@/src/components/monetize/SponsorCard";
+import NewsletterCard from "@/src/components/monetize/NewsletterCard";
+import UpgradeCard from "@/src/components/monetize/UpgradeCard";
+
+export default function Sidebar() {
+  return (
+    <aside style={{ display: "grid", gap: 12 }}>
+      <SponsorCard />
+      <NewsletterCard />
+      <UpgradeCard />
+    </aside>
+  );
+}

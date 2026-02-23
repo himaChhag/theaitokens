@@ -1,0 +1,205 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { Provider } from "@/src/lib/catalog/types";
+import { CATALOG, modelsByProvider } from "@/src/lib/catalog";
+
+type ApiOk = {
+  ok: true;
+  provider: Provider;
+  modelId: string;
+  modelName: string;
+  slug: string;
+  inputTokens: number;
+  expectedOutputTokens: number;
+  pricingBand: any;
+  costs: { inputCost: number; outputCost: number; totalCost: number };
+  pricing: { officialSourceUrl: string; lastVerified: string };
+};
+
+type ApiErr = { ok: false; error: string };
+
+export default function Estimator(props: { defaultProvider?: Provider; defaultModelId?: string }) {
+  const providers: Provider[] = ["openai", "anthropic", "google"];
+
+  const [provider, setProvider] = useState<Provider>(props.defaultProvider ?? "openai");
+
+  const providerModels = useMemo(() => modelsByProvider(provider), [provider]);
+
+  const [modelId, setModelId] = useState<string>(props.defaultModelId ?? (providerModels[0]?.id ?? ""));
+  const [prompt, setPrompt] = useState("");
+  const [expectedOutputTokens, setExpectedOutputTokens] = useState(250);
+  const [loading, setLoading] = useState(false);
+  const [res, setRes] = useState<ApiOk | ApiErr | null>(null);
+
+  useEffect(() => {
+    const first = modelsByProvider(provider)[0];
+    setModelId(props.defaultModelId && CATALOG.some(m => m.provider === provider && m.id === props.defaultModelId)
+      ? props.defaultModelId
+      : (first?.id ?? "")
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider]);
+
+  const canRun = modelId && prompt.trim().length > 0;
+
+  async function estimate() {
+    setLoading(true);
+    setRes(null);
+
+    try {
+      const r = await fetch("/api/estimate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, modelId, prompt, expectedOutputTokens }),
+      });
+
+      const j = await r.json();
+      setRes(j);
+    } catch (e: any) {
+      setRes({ ok: false, error: e?.message ?? "Network error" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div style={{ border: "1px solid #eee", borderRadius: 18, padding: 14 }}>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+        <Field label="Provider">
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as Provider)}
+            style={selectStyle}
+          >
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Claude</option>
+            <option value="google">Gemini</option>
+          </select>
+        </Field>
+
+        <Field label="Model">
+          <select
+            value={modelId}
+            onChange={(e) => setModelId(e.target.value)}
+            style={selectStyle}
+          >
+            {providerModels.length === 0 ? (
+              <option value="">No enabled models yet</option>
+            ) : (
+              providerModels.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))
+            )}
+          </select>
+        </Field>
+
+        <Field label="Expected output tokens">
+          <input
+            type="number"
+            min={0}
+            value={expectedOutputTokens}
+            onChange={(e) => setExpectedOutputTokens(Number(e.target.value))}
+            style={inputStyle}
+          />
+        </Field>
+
+        <button
+          onClick={estimate}
+          disabled={!canRun || loading}
+          style={{
+            padding: "10px 14px",
+            borderRadius: 12,
+            border: "1px solid #111",
+            background: !canRun || loading ? "#f4f4f4" : "#111",
+            color: !canRun || loading ? "#666" : "#fff",
+            cursor: !canRun || loading ? "not-allowed" : "pointer",
+            height: 40,
+          }}
+        >
+          {loading ? "Estimating…" : "Estimate"}
+        </button>
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <Field label="Prompt">
+          <textarea
+            rows={8}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Paste your prompt here…"
+            style={{
+              width: "100%",
+              padding: 12,
+              borderRadius: 14,
+              border: "1px solid #ddd",
+              fontFamily: "inherit",
+            }}
+          />
+        </Field>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        {res?.ok === false && (
+          <div style={{ border: "1px solid #f0c", borderRadius: 14, padding: 12 }}>
+            <div style={{ fontWeight: 800 }}>Error</div>
+            <div style={{ marginTop: 6 }}>{res.error}</div>
+            <div style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>
+              Enable models by adding verified pricing in <code>lib/catalog/*</code> and setting <code>status: "active"</code>.
+            </div>
+          </div>
+        )}
+
+        {res?.ok === true && (
+          <div style={{ border: "1px solid #eee", borderRadius: 14, padding: 12 }}>
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+              <Stat label="Input tokens" value={res.inputTokens} />
+              <Stat label="Output tokens" value={res.expectedOutputTokens} />
+              <Stat label="Input cost" value={`$${res.costs.inputCost}`} />
+              <Stat label="Output cost" value={`$${res.costs.outputCost}`} />
+              <Stat label="Total" value={`$${res.costs.totalCost}`} />
+            </div>
+            <div style={{ marginTop: 10, fontSize: 12, opacity: 0.75 }}>
+              Pricing source: <a href={res.pricing.officialSourceUrl} target="_blank" rel="noreferrer">official</a> • Verified: {res.pricing.lastVerified}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label style={{ display: "grid", gap: 6 }}>
+      <div style={{ fontSize: 12, opacity: 0.7 }}>{label}</div>
+      {children}
+    </label>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div style={{ minWidth: 150 }}>
+      <div style={{ fontSize: 12, opacity: 0.7 }}>{label}</div>
+      <div style={{ fontSize: 20, fontWeight: 900 }}>{value}</div>
+    </div>
+  );
+}
+
+const selectStyle: React.CSSProperties = {
+  padding: "10px 12px",
+  borderRadius: 12,
+  border: "1px solid #ddd",
+  height: 40,
+};
+
+const inputStyle: React.CSSProperties = {
+  padding: "10px 12px",
+  borderRadius: 12,
+  border: "1px solid #ddd",
+  height: 40,
+  width: 220,
+};

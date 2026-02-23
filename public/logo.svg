@@ -1,0 +1,44 @@
+<svg width="720" height="180" viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <linearGradient id="hexGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"></stop>
+      <stop offset="100%" stop-color="#1E3A8A"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Hexagon -->
+  <polygon points="90,15 150,45 150,105 90,135 30,105 30,45" fill="url(#hexGradient)"></polygon>
+
+  <!-- Center Circle -->
+  <circle cx="90" cy="75" r="20" fill="white"></circle>
+
+  <!-- Circuit Lines -->
+  <g stroke="white" stroke-width="4" stroke-linecap="round">
+    <line x1="90" y1="35" x2="90" y2="55"></line>
+    <line x1="125" y1="50" x2="108" y2="60"></line>
+    <line x1="125" y1="100" x2="108" y2="90"></line>
+    <line x1="90" y1="115" x2="90" y2="95"></line>
+    <line x1="55" y1="100" x2="72" y2="90"></line>
+    <line x1="55" y1="50" x2="72" y2="60"></line>
+  </g>
+
+  <!-- Circuit Dots -->
+  <g fill="white">
+    <circle cx="90" cy="30" r="6"></circle>
+    <circle cx="135" cy="45" r="6"></circle>
+    <circle cx="135" cy="105" r="6"></circle>
+    <circle cx="90" cy="120" r="6"></circle>
+    <circle cx="45" cy="105" r="6"></circle>
+    <circle cx="45" cy="45" r="6"></circle>
+  </g>
+
+  <!-- Text -->
+  <text x="190" y="85" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="700" fill="#0F172A">
+    The AI
+  </text>
+  <text x="190" y="135" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="700" fill="#1E3A8A">
+    Tokens
+  </text>
+
+</svg>

@@ -1,0 +1,67 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { findModelByProviderAndId } from "@/src/lib/catalog";
+import { countTokens } from "@/src/lib/tokens";
+import { pickBand } from "@/src/lib/pricing/band";
+import { costFor } from "@/src/lib/pricing/math";
+import type { Provider } from "@/src/lib/catalog/types";
+
+const Body = z.object({
+  provider: z.enum(["openai", "anthropic", "google"]),
+  modelId: z.string().min(1),
+  prompt: z.string().default(""),
+  expectedOutputTokens: z.number().int().min(0).default(0),
+});
+
+export async function POST(req: Request) {
+  try {
+    const b = Body.parse(await req.json());
+    const provider = b.provider as Provider;
+
+    const model = findModelByProviderAndId(provider, b.modelId);
+
+    if (model.status !== "active") {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "This model is not enabled yet (pricing not verified).",
+          model: { provider: model.provider, id: model.id, name: model.name },
+        },
+        { status: 400 }
+      );
+    }
+
+    const { inputTokens } = await countTokens({
+      provider,
+      modelId: model.id,
+      prompt: b.prompt,
+    });
+
+    const band = pickBand(model.pricingBands, inputTokens);
+    const costs = costFor(band, inputTokens, b.expectedOutputTokens);
+
+    return NextResponse.json({
+      ok: true,
+      provider,
+      modelId: model.id,
+      modelName: model.name,
+      slug: model.slug,
+
+      inputTokens,
+      expectedOutputTokens: b.expectedOutputTokens,
+
+      pricingBand: band,
+      costs,
+
+      pricing: {
+        officialSourceUrl: model.officialSourceUrl,
+        lastVerified: model.lastVerified,
+      },
+    });
+  } catch (e: any) {
+    return NextResponse.json(
+      { ok: false, error: e?.message ?? "Unknown error" },
+      { status: 400 }
+    );
+  }
+}
