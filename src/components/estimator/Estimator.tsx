@@ -72,7 +72,7 @@ export default function Estimator(props: {
     setRes(null);
 
     // Try multiple endpoints in order
-    const endpoints = ["/estimate", "/api/estimate"];
+    const endpoints = ["/api/estimate", "/api/simple-estimate", "/api/debug"];
 
     for (const endpoint of endpoints) {
       try {

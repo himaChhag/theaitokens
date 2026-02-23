@@ -18,6 +18,9 @@ interface RequestBody {
 
 export async function POST(request: Request) {
   console.log("🚀 API /estimate POST called at:", new Date().toISOString());
+  console.log("🔍 Request headers:", Object.fromEntries(request.headers.entries()));
+  console.log("🔍 Request method:", request.method);
+  console.log("🔍 Request URL:", request.url);
   
   try {
     // Parse request body
@@ -108,4 +111,17 @@ export async function GET() {
     { ok: false, error: "Method not allowed. Use POST." },
     { status: 405 }
   );
+}
+
+export async function OPTIONS(request: Request) {
+  console.log("🔧 OPTIONS method called on /api/estimate");
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
 }
