@@ -5,67 +5,61 @@ import { pickBand } from "@/lib/pricing/band";
 import { costFor } from "@/lib/pricing/math";
 import { countTokens } from "@/lib/tokens";
 
+// Force this to be a dynamic route
+export const dynamic = 'force-dynamic';
 export const runtime = "nodejs";
 
-type Body = {
+interface RequestBody {
   provider: Provider;
   modelId: string;
   prompt: string;
   expectedOutputTokens?: number;
-};
+}
 
-export async function POST(req: Request) {
-  // Add debugging for production
-  console.log("API /estimate POST called at:", new Date().toISOString());
+export async function POST(request: Request) {
+  console.log("🚀 API /estimate POST called at:", new Date().toISOString());
   
-  // Ensure we always return JSON (prevents client JSON.parse failures)
-  const ct = req.headers.get("content-type") || "";
-  if (!ct.includes("application/json")) {
-    console.log("Invalid content-type:", ct);
-    return NextResponse.json(
-      { ok: false as const, error: "Content-Type must be application/json" },
-      { status: 415 }
-    );
-  }
-
-  let b: Body;
   try {
-    b = (await req.json()) as Body;
-    console.log("Request body parsed:", { provider: b.provider, modelId: b.modelId, promptLength: b.prompt?.length });
-  } catch (error) {
-    console.log("JSON parse error:", error);
-    return NextResponse.json(
-      { ok: false as const, error: "Invalid JSON body" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    const provider = b.provider;
-    const modelId = b.modelId;
-    const prompt = (b.prompt ?? "").toString();
-    const expectedOutputTokens = Number.isFinite(b.expectedOutputTokens)
-      ? Math.max(0, Number(b.expectedOutputTokens))
-      : 250;
-
-    if (!provider || !modelId) {
+    // Parse request body
+    let body: RequestBody;
+    try {
+      body = await request.json();
+      console.log("📝 Request parsed:", { 
+        provider: body.provider, 
+        modelId: body.modelId, 
+        promptLength: body.prompt?.length 
+      });
+    } catch (error) {
+      console.error("❌ JSON parse error:", error);
       return NextResponse.json(
-        { ok: false as const, error: "Missing provider or modelId" },
+        { ok: false, error: "Invalid JSON body" },
         { status: 400 }
       );
     }
 
-    const model = findModelByProviderAndId(provider, modelId);
+    const { provider, modelId, prompt = "", expectedOutputTokens = 250 } = body;
 
-    // Always compute tokens (Option B friendly)
+    if (!provider || !modelId) {
+      console.log("❌ Missing required fields:", { provider, modelId });
+      return NextResponse.json(
+        { ok: false, error: "Missing provider or modelId" },
+        { status: 400 }
+      );
+    }
+
+    // Find model
+    const model = findModelByProviderAndId(provider, modelId);
+    console.log("🔍 Model found:", { id: model.id, name: model.name, status: model.status });
+
+    // Count tokens
     const tokenResult = await countTokens({ provider, modelId, prompt });
     const inputTokens = tokenResult.inputTokens;
+    console.log("🔢 Tokens counted:", { inputTokens, mode: tokenResult.countingMode });
 
-    // Only compute costs if pricing is enabled AND model is active
-    const pricingReady =
-      model.status === "active" &&
-      Array.isArray(model.pricingBands) &&
-      model.pricingBands.length > 0;
+    // Calculate costs if model is active
+    const pricingReady = model.status === "active" && 
+                        Array.isArray(model.pricingBands) && 
+                        model.pricingBands.length > 0;
 
     let band: PricingBand | null = null;
     let costs: { inputCost: number; outputCost: number; totalCost: number } | null = null;
@@ -73,34 +67,45 @@ export async function POST(req: Request) {
     if (pricingReady) {
       band = pickBand(model.pricingBands, inputTokens);
       costs = costFor(band, inputTokens, expectedOutputTokens);
+      console.log("💰 Costs calculated:", costs);
     }
 
-    return NextResponse.json({
-      ok: true as const,
+    const response = {
+      ok: true,
       provider,
       modelId: model.id,
       modelName: model.name,
       slug: model.slug,
-
       inputTokens,
       expectedOutputTokens,
-
       countingMode: tokenResult.countingMode,
       confidenceNote: tokenResult.confidenceNote ?? null,
-
       pricingReady,
       pricingBand: band,
       costs,
-
       pricing: {
         officialSourceUrl: model.officialSourceUrl,
         lastVerified: model.lastVerified,
       },
-    });
-  } catch (e: any) {
+    };
+
+    console.log("✅ Success response prepared");
+    return NextResponse.json(response);
+
+  } catch (error: any) {
+    console.error("💥 API Error:", error);
     return NextResponse.json(
-      { ok: false as const, error: e?.message ?? "Unknown error" },
+      { ok: false, error: error?.message ?? "Unknown error" },
       { status: 500 }
     );
   }
+}
+
+// Explicitly handle other methods
+export async function GET() {
+  console.log("❌ GET method called on /api/estimate");
+  return NextResponse.json(
+    { ok: false, error: "Method not allowed. Use POST." },
+    { status: 405 }
+  );
 }
