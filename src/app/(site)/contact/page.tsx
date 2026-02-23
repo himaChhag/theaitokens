@@ -58,39 +58,124 @@ export default function ContactPage() {
               <h2 className="text-2xl font-semibold mb-4">
                 What We Can Help With
               </h2>
-              <ul>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+              <div style={{ listStyle: "none" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Questions about token counting accuracy</span>
-                </li>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Pricing information and updates</span>
-                </li>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Feature requests and suggestions</span>
-                </li>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Technical support and bug reports</span>
-                </li>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Partnership and collaboration inquiries</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Media and press inquiries</span>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="mb-8">
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-6">Send us a Message</h2>
             <ContactForm />
-          </div>
+          </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">
@@ -149,28 +234,82 @@ export default function ContactPage() {
                 We prefer direct communication via email because it allows us
                 to:
               </p>
-              <ul>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+              <div style={{ listStyle: "none" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Provide detailed, personalized responses</span>
-                </li>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>Keep a record of our conversation for follow-up</span>
-                </li>
-                <li className="flex items-start mb-4">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>
                     Share screenshots, code snippets, or detailed explanations
                   </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-600 mr-3 mt-1">•</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
+                  <span
+                    style={{
+                      color: "#2563eb",
+                      marginRight: "16px",
+                      marginTop: "4px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    •
+                  </span>
                   <span>
                     Ensure your questions get the attention they deserve
                   </span>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
           </section>
 
