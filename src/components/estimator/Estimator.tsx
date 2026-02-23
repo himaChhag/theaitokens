@@ -51,7 +51,7 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
     setRes(null);
 
     try {
-      const r = await fetch("/api/estimate", {
+      const r = await fetch("/estimate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ provider, modelId, prompt, expectedOutputTokens }),
