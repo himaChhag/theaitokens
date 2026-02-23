@@ -23,7 +23,7 @@ type ApiOk = {
 type ApiErr = { ok: false; error: string };
 
 export default function Estimator(props: { defaultProvider?: Provider; defaultModelId?: string }) {
-  const providers: Provider[] = ["openai", "anthropic", "google"];
+  const providers: Provider[] = ["openai", "anthropic", "google", "cohere", "mistral", "xai", "meta", "perplexity", "together"];
 
   const [provider, setProvider] = useState<Provider>(props.defaultProvider ?? "openai");
 
@@ -94,8 +94,14 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
             style={selectStyle}
           >
             <option value="openai">OpenAI</option>
-            <option value="anthropic">Claude</option>
-            <option value="google">Gemini</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="google">Google</option>
+            <option value="cohere">Cohere</option>
+            <option value="mistral">Mistral</option>
+            <option value="xai">xAI</option>
+            <option value="meta">Meta</option>
+            <option value="perplexity">Perplexity</option>
+            <option value="together">Together AI</option>
           </select>
         </Field>
 
