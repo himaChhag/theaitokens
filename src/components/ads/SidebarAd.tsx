@@ -7,17 +7,11 @@ interface SidebarAdProps {
   className?: string;
 }
 
-declare global {
-  interface Window {
-    adsbygoogle: any[];
-  }
-}
-
 export default function SidebarAd({ slot, className = '' }: SidebarAdProps) {
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.adsbygoogle) {
+    if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
       try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
       } catch (error) {
         console.error('AdSense error:', error);
       }

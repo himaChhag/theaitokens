@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WebVitals from "@/components/analytics/WebVitals";
+import ClientScripts from "@/components/analytics/ClientScripts";
 import { Analytics } from "@vercel/analytics/next";
 import { Metadata } from "next";
 
@@ -120,42 +121,6 @@ export default function SiteLayout({
         <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" href="/icon-192x192.png" sizes="192x192" type="image/png" />
-
-        {/* Google Analytics */}
-        <script
-          async
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || ''}`}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: process.env.NEXT_PUBLIC_GA_ID ? `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-                page_title: document.title,
-                page_location: window.location.href,
-              });
-            ` : '',
-          }}
-        />
-
-        {/* Google AdSense */}
-        <script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID || ''}`}
-          crossOrigin="anonymous"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: process.env.NEXT_PUBLIC_ADSENSE_ID ? `
-              (adsbygoogle = window.adsbygoogle || []).push({
-                google_ad_client: "${process.env.NEXT_PUBLIC_ADSENSE_ID}",
-                enable_page_level_ads: true
-              });
-            ` : '',
-          }}
-        />
       </head>
       <body>
         {/* Enhanced Schema Markup */}
@@ -178,6 +143,7 @@ export default function SiteLayout({
           }}
         />
 
+        <ClientScripts />
         <Header />
         {children}
         <Footer />

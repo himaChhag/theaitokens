@@ -1,0 +1,37 @@
+.desktopNav {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mobileMenuButton {
+  display: none;
+}
+
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktopNav {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mobileMenu {
+    display: block;
+  }
+}

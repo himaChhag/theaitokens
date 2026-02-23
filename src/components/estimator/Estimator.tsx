@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import type { Provider } from "@/lib/catalog/types";
 import { CATALOG, modelsByProvider } from "@/lib/catalog";
+import { QueryHistoryCache, type QueryHistoryItem } from "@/lib/cache/queryHistory";
+import QueryHistory from "./QueryHistory";
 
 type ApiOk = {
   ok: true;
@@ -22,22 +25,13 @@ type ApiOk = {
 
 type ApiErr = { ok: false; error: string };
 
-export default function Estimator(props: {
+function EstimatorContent(props: {
   defaultProvider?: Provider;
   defaultModelId?: string;
 }) {
-  const providers: Provider[] = [
-    "openai",
-    "anthropic",
-    "google",
-    "cohere",
-    "mistral",
-    "xai",
-    "meta",
-    "perplexity",
-    "together",
-  ];
-
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const [provider, setProvider] = useState<Provider>(
     props.defaultProvider ?? "openai"
   );
@@ -51,6 +45,7 @@ export default function Estimator(props: {
   const [expectedOutputTokens, setExpectedOutputTokens] = useState(250);
   const [loading, setLoading] = useState(false);
   const [res, setRes] = useState<ApiOk | ApiErr | null>(null);
+  const [currentQueryId, setCurrentQueryId] = useState<string | null>(null);
 
   useEffect(() => {
     const first = modelsByProvider(provider)[0];
@@ -72,11 +67,59 @@ export default function Estimator(props: {
     setLoading(false);
   }, [modelId]);
 
+  // Load query from URL parameters
+  useEffect(() => {
+    const queryId = searchParams.get('q');
+    if (queryId) {
+      const query = QueryHistoryCache.getQueryById(queryId);
+      if (query) {
+        setProvider(query.provider as Provider);
+        setModelId(query.modelId);
+        setPrompt(query.prompt);
+        setExpectedOutputTokens(query.expectedOutputTokens);
+        setCurrentQueryId(queryId);
+        
+        // If query has results, show them
+        if (query.result) {
+          setRes({
+            ok: true,
+            provider: query.provider as Provider,
+            modelId: query.modelId,
+            modelName: query.modelId, // Simplified for now
+            slug: query.modelId,
+            inputTokens: query.result.inputTokens,
+            expectedOutputTokens: query.result.outputTokens,
+            pricing: { officialSourceUrl: '', lastVerified: '' },
+            countingMode: 'estimate' as const,
+            confidenceNote: null,
+            pricingReady: !!query.result.costs,
+            pricingBand: null,
+            costs: query.result.costs || null,
+          });
+        }
+      }
+    }
+  }, [searchParams]);
+
   const canRun = modelId && prompt.trim().length > 0;
 
   async function estimate() {
     setLoading(true);
     setRes(null);
+
+    // Save query to history
+    const queryId = QueryHistoryCache.addQuery({
+      provider,
+      modelId,
+      prompt,
+      expectedOutputTokens,
+    });
+    setCurrentQueryId(queryId);
+
+    // Update URL with query ID
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', queryId);
+    router.replace(url.pathname + url.search, { scroll: false });
 
     try {
       // Try multiple endpoints in order
@@ -124,6 +167,16 @@ export default function Estimator(props: {
 
           console.log(`Success with ${endpoint}`);
           setRes(j);
+
+          // Update query history with results
+          if (j.ok) {
+            QueryHistoryCache.updateQueryResult(queryId, {
+              inputTokens: j.inputTokens,
+              outputTokens: j.expectedOutputTokens,
+              costs: j.costs,
+            });
+          }
+
           return; // Success, exit function
         } catch (e: any) {
           console.log(`Error with ${endpoint}:`, e.message);
@@ -158,16 +211,51 @@ export default function Estimator(props: {
     }
   }
 
+  const handleLoadQuery = (query: QueryHistoryItem) => {
+    setProvider(query.provider as Provider);
+    setModelId(query.modelId);
+    setPrompt(query.prompt);
+    setExpectedOutputTokens(query.expectedOutputTokens);
+    setCurrentQueryId(query.id);
+
+    // Update URL
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', query.id);
+    router.replace(url.pathname + url.search, { scroll: false });
+
+    // If query has results, show them
+    if (query.result) {
+      setRes({
+        ok: true,
+        provider: query.provider as Provider,
+        modelId: query.modelId,
+        modelName: query.modelId,
+        slug: query.modelId,
+        inputTokens: query.result.inputTokens,
+        expectedOutputTokens: query.result.outputTokens,
+        pricing: { officialSourceUrl: '', lastVerified: '' },
+        countingMode: 'estimate' as const,
+        confidenceNote: null,
+        pricingReady: !!query.result.costs,
+        pricingBand: null,
+        costs: query.result.costs || null,
+      });
+    } else {
+      setRes(null);
+    }
+  };
+
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-        border: "1px solid #e2e8f0",
-        borderRadius: 18,
-        padding: 20,
-        boxShadow: "0 4px 6px rgba(30, 58, 138, 0.1)",
-      }}
-    >
+    <>
+      <div
+        style={{
+          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+          border: "1px solid #e2e8f0",
+          borderRadius: 18,
+          padding: 20,
+          boxShadow: "0 4px 6px rgba(30, 58, 138, 0.1)",
+        }}
+      >
       <div
         style={{
           display: "flex",
@@ -355,6 +443,13 @@ export default function Estimator(props: {
         )}
       </div>
     </div>
+    
+    <QueryHistory 
+      onLoadQuery={handleLoadQuery}
+      currentQueryId={currentQueryId}
+      minimizedByDefault={true}
+    />
+    </>
   );
 }
 
@@ -404,3 +499,14 @@ const inputStyle: React.CSSProperties = {
   color: "#0F172A",
   transition: "border-color 0.2s ease",
 };
+
+export default function Estimator(props: {
+  defaultProvider?: Provider;
+  defaultModelId?: string;
+}) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EstimatorContent {...props} />
+    </Suspense>
+  );
+}
