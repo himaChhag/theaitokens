@@ -1,4 +1,4 @@
-export type Provider = "openai" | "anthropic" | "google";
+export type Provider = "openai" | "anthropic" | "google" | "cohere" | "mistral" | "xai" | "meta" | "perplexity" | "together";
 export type ModelStatus = "active" | "disabled";
 
 export type PricingBand = {
