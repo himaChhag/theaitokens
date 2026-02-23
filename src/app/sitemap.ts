@@ -28,7 +28,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const providerPages = [
     { url: `${baseUrl}/openai`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.95 },
     { url: `${baseUrl}/claude`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.95 },
+    { url: `${baseUrl}/anthropic`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.95 },
     { url: `${baseUrl}/google`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.95 },
+    { url: `${baseUrl}/cohere`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.90 },
+    { url: `${baseUrl}/mistral`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.90 },
+    { url: `${baseUrl}/xai`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.90 },
+    { url: `${baseUrl}/meta`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.90 },
+    { url: `${baseUrl}/perplexity`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.90 },
+    { url: `${baseUrl}/together`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.90 },
   ];
 
   // Learn articles
