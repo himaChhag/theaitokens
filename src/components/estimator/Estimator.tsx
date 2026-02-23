@@ -73,11 +73,11 @@ export default function Estimator(props: {
 
     // Try multiple endpoints in order
     const endpoints = ["/estimate", "/api/estimate"];
-    
+
     for (const endpoint of endpoints) {
       try {
         console.log(`Trying endpoint: ${endpoint}`);
-        
+
         const r = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function Estimator(props: {
         });
 
         console.log(`Response status: ${r.status}`);
-        
+
         if (r.status === 405) {
           console.log(`405 error on ${endpoint}, trying next...`);
           continue; // Try next endpoint
@@ -117,20 +117,27 @@ export default function Estimator(props: {
         console.log(`Success with ${endpoint}`);
         setRes(j);
         return; // Success, exit function
-        
       } catch (e: any) {
         console.log(`Error with ${endpoint}:`, e.message);
         if (endpoints.indexOf(endpoint) === endpoints.length - 1) {
           // Last endpoint failed
-          setRes({ ok: false, error: `All endpoints failed. Last error: ${e?.message ?? "Network error"}` });
+          setRes({
+            ok: false,
+            error: `All endpoints failed. Last error: ${
+              e?.message ?? "Network error"
+            }`,
+          });
           return;
         }
         continue; // Try next endpoint
       }
     }
-    
+
     // If we get here, all endpoints failed
-    setRes({ ok: false, error: "All API endpoints are unavailable (405 errors)" });
+    setRes({
+      ok: false,
+      error: "All API endpoints are unavailable (405 errors)",
+    });
     setLoading(false);
   }
 

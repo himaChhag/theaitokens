@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       tokenResult = await countTokens({ provider, modelId, prompt });
       inputTokens = tokenResult.inputTokens;
       countingMode = tokenResult.countingMode;
-      confidenceNote = tokenResult.confidenceNote;
+      confidenceNote = tokenResult.confidenceNote ?? null;
       console.log("✅ TOKENS COUNTED:", { inputTokens, mode: countingMode });
     } catch (tokenError) {
       console.log("⚠️ TOKENIZER FAILED, using fallback:", tokenError);
