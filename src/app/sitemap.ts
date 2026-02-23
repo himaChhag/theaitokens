@@ -39,7 +39,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  // keep any existing entries you already include here as well (home/tools/etc)
+  // Long tail money pages
+  const longTailPages = [
+    // Pricing calculators
+    { url: `${baseUrl}/ai-pricing-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/openai-pricing-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/claude-pricing-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/gemini-pricing-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/gpt-4-pricing-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/ai-token-cost-estimator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/llm-pricing-comparison`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/ai-api-cost-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    // Token counters
+    { url: `${baseUrl}/openai-token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/claude-token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/gemini-token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/gpt-token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    // Cost comparison tools
+    { url: `${baseUrl}/cheapest-ai-model`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/ai-cost-comparison-tool`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/enterprise-ai-pricing`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    // Use case specific
+    { url: `${baseUrl}/chatbot-ai-pricing`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/content-generation-ai-costs`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${baseUrl}/ai-translation-pricing`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.85 },
+  ];
+
   return [
     { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
     { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
@@ -50,5 +75,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...modelPages,
     ...comparisonPages,
     ...learnPages,
+    ...longTailPages,
   ];
 }
