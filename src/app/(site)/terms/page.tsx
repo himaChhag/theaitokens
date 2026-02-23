@@ -20,6 +20,23 @@ export default function TermsPage() {
           </p>
 
           <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Independence Disclaimer</h2>
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg">
+              <p className="mb-4">
+                <strong>Important:</strong> The AI Tokens is an independent website created out of personal interest 
+                and is not affiliated, associated, authorized, endorsed by, or in any way officially 
+                connected with OpenAI, Anthropic, Google, Meta, xAI, Cohere, or any other AI provider 
+                mentioned on this site.
+              </p>
+              <p className="mb-4">
+                All company names, product names, and logos are trademarks or registered trademarks 
+                of their respective owners. This website is maintained as a personal project to help 
+                the AI community with token counting and cost calculations.
+              </p>
+            </div>
+          </section>
+
+          <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Acceptance of Terms</h2>
             <p className="mb-4">
               By accessing and using The AI Tokens website and services, you accept and agree 
@@ -58,12 +75,27 @@ export default function TermsPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Accuracy Disclaimer</h2>
-            <p className="mb-4">
-              While we strive for accuracy in our token counts and pricing information, 
-              we cannot guarantee 100% accuracy. Pricing and model specifications may change 
-              without notice. Always verify costs with the official provider before making 
-              significant financial decisions.
-            </p>
+            <div className="bg-red-50 border-l-4 border-red-400 p-6 rounded-r-lg">
+              <p className="mb-4">
+                <strong>No Guarantee of Accuracy:</strong> While we strive for accuracy in our token counts and pricing information, 
+                we cannot guarantee 100% accuracy of any information provided on this website. All data is maintained 
+                on a best-efforts basis as a personal project.
+              </p>
+              <p className="mb-4">
+                <strong>Information Updates:</strong> Pricing, model specifications, and availability may change 
+                without notice from the respective AI providers. We attempt to keep information current but 
+                cannot guarantee real-time accuracy.
+              </p>
+              <p className="mb-4">
+                <strong>Use at Your Own Risk:</strong> Always verify costs, specifications, and availability 
+                with the official provider before making significant financial decisions or business commitments.
+              </p>
+              <p>
+                <strong>Best Efforts Only:</strong> This website is maintained as a personal project on a 
+                best-efforts basis. We are not responsible for any losses, damages, or issues arising from 
+                the use of information provided on this site.
+              </p>
+            </div>
           </section>
 
           <section className="mb-8">

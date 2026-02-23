@@ -108,6 +108,28 @@ export default function AboutPage() {
           </section>
 
           <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Independence Disclaimer</h2>
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg">
+              <p className="mb-4">
+                <strong>Important:</strong> The AI Tokens is an independent website created out of personal interest 
+                and is not affiliated, associated, authorized, endorsed by, or in any way officially 
+                connected with OpenAI, Anthropic, Google, Meta, xAI, Cohere, or any other AI provider 
+                mentioned on this site.
+              </p>
+              <p className="mb-4">
+                All company names, product names, and logos are trademarks or registered trademarks 
+                of their respective owners. This website is maintained as a personal project to help 
+                the AI community with token counting and cost calculations.
+              </p>
+              <p>
+                We gather publicly available pricing information and provide tools based on our own 
+                research and development. For official information, always refer to the respective 
+                provider's official documentation and websites.
+              </p>
+            </div>
+          </section>
+
+          <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Our Commitment</h2>
             <p className="mb-4">
               We're committed to maintaining the most accurate and comprehensive AI pricing 
@@ -119,6 +141,17 @@ export default function AboutPage() {
               or a developer exploring different models, The AI Tokens provides the tools 
               and insights you need to make informed decisions.
             </p>
+            <div className="bg-red-50 border-l-4 border-red-400 p-6 rounded-r-lg mt-6">
+              <p className="mb-4">
+                <strong>Important Note:</strong> While we strive for accuracy, we cannot guarantee 100% accuracy 
+                of any information provided. All data is maintained on a best-efforts basis as a personal project. 
+                Always verify costs and specifications with official providers before making business decisions.
+              </p>
+              <p>
+                <strong>Best Efforts Maintenance:</strong> This website is maintained as a personal project 
+                with best-efforts to keep information current, but we cannot guarantee real-time accuracy.
+              </p>
+            </div>
           </section>
 
           <section className="mb-8">
