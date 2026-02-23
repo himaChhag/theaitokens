@@ -233,7 +233,19 @@ export default function OpenAIPage() {
             textDecoration: "none",
             border: "1px solid rgba(56, 189, 248, 0.2)"
           }}>
-            Compare Models
+            GPT-4o vs Claude
+          </Link>
+          <Link href="/compare/gpt-4o-vs-gemini-pro" style={{
+            padding: "8px 16px",
+            background: "rgba(56, 189, 248, 0.1)",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#1E3A8A",
+            textDecoration: "none",
+            border: "1px solid rgba(56, 189, 248, 0.2)"
+          }}>
+            GPT-4o vs Gemini
           </Link>
         </div>
       </div>

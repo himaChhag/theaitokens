@@ -28,3 +28,9 @@ export function findModelByProviderAndSlug(provider: Provider, slug: string) {
   if (!m) throw new Error(`Unknown model page: ${provider}/${slug}`);
   return m;
 }
+
+export function findModelById(id: string) {
+  const m = CATALOG.find(x => x.id === id);
+  if (!m) throw new Error(`Unknown model: ${id}`);
+  return m;
+}

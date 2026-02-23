@@ -35,6 +35,16 @@ export default function Header() {
           {/* Navigation */}
           <nav style={{ display: "flex", gap: 20, fontSize: 14, fontWeight: 500 }}>
             <Link 
+              href="/compare"
+              style={{ 
+                padding: "8px 16px",
+                borderRadius: 8,
+                transition: "all 0.2s ease",
+              }}
+            >
+              Compare
+            </Link>
+            <Link 
               href="/tools/token-counter"
               style={{ 
                 padding: "8px 16px",

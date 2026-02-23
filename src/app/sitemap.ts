@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { activeModels } from "@/lib/catalog";
+import { getAllComparisons } from "@/lib/comparisons";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://theaitokens.com";
@@ -14,6 +15,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
+  // Comparison pages
+  const comparisonPages = getAllComparisons().map((c) => ({
+    url: `${baseUrl}/compare/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  }));
+
   // Provider overview pages
   const providerPages = [
     { url: `${baseUrl}/openai`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.95 },
@@ -24,9 +33,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // keep any existing entries you already include here as well (home/tools/etc)
   return [
     { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
+    { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${baseUrl}/tools/cost-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${baseUrl}/tools/token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     ...providerPages,
     ...modelPages,
+    ...comparisonPages,
   ];
 }
