@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import type { Provider, PricingBand } from "@/lib/catalog/types";
+import type { Provider } from "@/lib/catalog/types";
 import { findModelByProviderAndId } from "@/lib/catalog";
 import { pickBand } from "@/lib/pricing/band";
 import { costFor } from "@/lib/pricing/math";
-import { countTokens } from "@/lib/tokens";
 
 export const dynamic = 'force-dynamic';
 export const runtime = "nodejs";
@@ -15,12 +14,48 @@ interface RequestBody {
   expectedOutputTokens?: number;
 }
 
+// Simple token estimation without external libraries
+function estimateTokensSimple(text: string, provider: Provider): number {
+  if (!text || text.length === 0) return 0;
+  
+  // Basic word-based estimation
+  const words = text.split(/\s+/).filter(word => word.length > 0);
+  let tokenCount = 0;
+  
+  // Provider-specific patterns
+  const charPerToken = {
+    openai: 4.0,
+    anthropic: 4.1,
+    google: 3.8,
+    meta: 4.2,
+    mistral: 4.0,
+    cohere: 4.0,
+    xai: 4.0,
+    perplexity: 4.0,
+    together: 4.0,
+  }[provider] || 4.0;
+  
+  for (const word of words) {
+    if (word.length <= 3) {
+      tokenCount += 1;
+    } else {
+      tokenCount += Math.ceil(word.length / charPerToken);
+    }
+  }
+  
+  // Add tokens for punctuation
+  const punctuationCount = (text.match(/[.,!?;:()[\]{}\"'-]/g) || []).length;
+  tokenCount += Math.ceil(punctuationCount * 0.8);
+  
+  return Math.max(1, Math.round(tokenCount));
+}
+
 export async function POST(request: Request) {
-  console.log("🚀 ESTIMATE API CALLED:", new Date().toISOString());
+  console.log("🔧 SIMPLE ESTIMATE API CALLED:", new Date().toISOString());
   
   try {
     const body: RequestBody = await request.json();
-    console.log("📝 BODY:", { provider: body.provider, modelId: body.modelId });
+    console.log("📝 SIMPLE BODY:", { provider: body.provider, modelId: body.modelId });
 
     const { provider, modelId, prompt = "", expectedOutputTokens = 250 } = body;
 
@@ -29,43 +64,26 @@ export async function POST(request: Request) {
     }
 
     const model = findModelByProviderAndId(provider, modelId);
-    console.log("🔍 MODEL FOUND:", { id: model.id, status: model.status });
+    console.log("🔍 SIMPLE MODEL FOUND:", { id: model.id, status: model.status });
 
-    // Try to count tokens with fallback
-    let tokenResult;
-    let inputTokens;
-    let countingMode: "exact" | "near-exact" | "estimate" = "estimate";
-    let confidenceNote: string | null = null;
-
-    try {
-      tokenResult = await countTokens({ provider, modelId, prompt });
-      inputTokens = tokenResult.inputTokens;
-      countingMode = tokenResult.countingMode;
-      confidenceNote = tokenResult.confidenceNote ?? null;
-      console.log("✅ TOKENS COUNTED:", { inputTokens, mode: countingMode });
-    } catch (tokenError) {
-      console.log("⚠️ TOKENIZER FAILED, using fallback:", tokenError);
-      // Fallback token estimation
-      inputTokens = Math.max(1, Math.ceil(prompt.length / 4)); // Basic char/4 estimation
-      countingMode = "estimate";
-      confidenceNote = "Using fallback estimation due to tokenizer error";
-    }
+    // Simple token estimation
+    const inputTokens = estimateTokensSimple(prompt, provider);
+    console.log("🔢 SIMPLE TOKENS:", { inputTokens });
 
     const pricingReady = model.status === "active" && 
                         Array.isArray(model.pricingBands) && 
                         model.pricingBands.length > 0;
 
-    let band: PricingBand | null = null;
-    let costs: { inputCost: number; outputCost: number; totalCost: number } | null = null;
+    let band = null;
+    let costs = null;
 
     if (pricingReady) {
       try {
         band = pickBand(model.pricingBands, inputTokens);
         costs = costFor(band, inputTokens, expectedOutputTokens);
-        console.log("💰 COSTS:", costs);
+        console.log("💰 SIMPLE COSTS:", costs);
       } catch (pricingError) {
-        console.log("⚠️ PRICING FAILED:", pricingError);
-        // Continue without pricing
+        console.log("⚠️ SIMPLE PRICING FAILED:", pricingError);
       }
     }
 
@@ -77,8 +95,8 @@ export async function POST(request: Request) {
       slug: model.slug,
       inputTokens,
       expectedOutputTokens,
-      countingMode,
-      confidenceNote,
+      countingMode: "estimate" as const,
+      confidenceNote: "Simple estimation without external tokenizer libraries",
       pricingReady,
       pricingBand: band,
       costs,
@@ -88,11 +106,11 @@ export async function POST(request: Request) {
       },
     };
 
-    console.log("✅ SUCCESS RESPONSE");
+    console.log("✅ SIMPLE SUCCESS");
     return NextResponse.json(response);
 
   } catch (error: any) {
-    console.error("💥 CRITICAL ERROR:", error);
+    console.error("💥 SIMPLE ERROR:", error);
     return NextResponse.json({ ok: false, error: error?.message ?? "Unknown error" }, { status: 500 });
   }
 }
