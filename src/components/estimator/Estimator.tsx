@@ -22,14 +22,31 @@ type ApiOk = {
 
 type ApiErr = { ok: false; error: string };
 
-export default function Estimator(props: { defaultProvider?: Provider; defaultModelId?: string }) {
-  const providers: Provider[] = ["openai", "anthropic", "google", "cohere", "mistral", "xai", "meta", "perplexity", "together"];
+export default function Estimator(props: {
+  defaultProvider?: Provider;
+  defaultModelId?: string;
+}) {
+  const providers: Provider[] = [
+    "openai",
+    "anthropic",
+    "google",
+    "cohere",
+    "mistral",
+    "xai",
+    "meta",
+    "perplexity",
+    "together",
+  ];
 
-  const [provider, setProvider] = useState<Provider>(props.defaultProvider ?? "openai");
+  const [provider, setProvider] = useState<Provider>(
+    props.defaultProvider ?? "openai"
+  );
 
   const providerModels = useMemo(() => modelsByProvider(provider), [provider]);
 
-  const [modelId, setModelId] = useState<string>(props.defaultModelId ?? (providerModels[0]?.id ?? ""));
+  const [modelId, setModelId] = useState<string>(
+    props.defaultModelId ?? providerModels[0]?.id ?? ""
+  );
   const [prompt, setPrompt] = useState("");
   const [expectedOutputTokens, setExpectedOutputTokens] = useState(250);
   const [loading, setLoading] = useState(false);
@@ -37,9 +54,13 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
 
   useEffect(() => {
     const first = modelsByProvider(provider)[0];
-    setModelId(props.defaultModelId && CATALOG.some(m => m.provider === provider && m.id === props.defaultModelId)
-      ? props.defaultModelId
-      : (first?.id ?? "")
+    setModelId(
+      props.defaultModelId &&
+        CATALOG.some(
+          (m) => m.provider === provider && m.id === props.defaultModelId
+        )
+        ? props.defaultModelId
+        : first?.id ?? ""
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider]);
@@ -50,43 +71,87 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
     setLoading(true);
     setRes(null);
 
-    try {
-      const r = await fetch("/estimate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, modelId, prompt, expectedOutputTokens }),
-      });
-
-      const text = await r.text();
-
-      let j: any;
+    // Try multiple endpoints in order
+    const endpoints = ["/estimate", "/api/estimate"];
+    
+    for (const endpoint of endpoints) {
       try {
-        j = JSON.parse(text);
-      } catch {
-        // Not JSON (likely Next error page). Surface it.
-        throw new Error(
-          `API returned non-JSON (${r.status} ${r.statusText}). ` +
-            `First 200 chars: ${text.slice(0, 200)}`
-        );
+        console.log(`Trying endpoint: ${endpoint}`);
+        
+        const r = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            provider,
+            modelId,
+            prompt,
+            expectedOutputTokens,
+          }),
+        });
+
+        console.log(`Response status: ${r.status}`);
+        
+        if (r.status === 405) {
+          console.log(`405 error on ${endpoint}, trying next...`);
+          continue; // Try next endpoint
+        }
+
+        const text = await r.text();
+        console.log(`Response text length: ${text.length}`);
+
+        let j: any;
+        try {
+          j = JSON.parse(text);
+        } catch {
+          console.log(`JSON parse failed for ${endpoint}`);
+          if (endpoints.indexOf(endpoint) === endpoints.length - 1) {
+            // Last endpoint failed
+            throw new Error(
+              `API returned non-JSON (${r.status} ${r.statusText}). ` +
+                `First 200 chars: ${text.slice(0, 200)}`
+            );
+          }
+          continue; // Try next endpoint
+        }
+
+        console.log(`Success with ${endpoint}`);
+        setRes(j);
+        return; // Success, exit function
+        
+      } catch (e: any) {
+        console.log(`Error with ${endpoint}:`, e.message);
+        if (endpoints.indexOf(endpoint) === endpoints.length - 1) {
+          // Last endpoint failed
+          setRes({ ok: false, error: `All endpoints failed. Last error: ${e?.message ?? "Network error"}` });
+          return;
+        }
+        continue; // Try next endpoint
       }
-      
-      setRes(j);
-    } catch (e: any) {
-      setRes({ ok: false, error: e?.message ?? "Network error" });
-    } finally {
-      setLoading(false);
     }
+    
+    // If we get here, all endpoints failed
+    setRes({ ok: false, error: "All API endpoints are unavailable (405 errors)" });
+    setLoading(false);
   }
 
   return (
-    <div style={{ 
-      background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-      border: "1px solid #e2e8f0", 
-      borderRadius: 18, 
-      padding: 20,
-      boxShadow: "0 4px 6px rgba(30, 58, 138, 0.1)"
-    }}>
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+    <div
+      style={{
+        background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+        border: "1px solid #e2e8f0",
+        borderRadius: 18,
+        padding: 20,
+        boxShadow: "0 4px 6px rgba(30, 58, 138, 0.1)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          flexWrap: "wrap",
+          alignItems: "flex-end",
+        }}
+      >
         <Field label="Provider">
           <select
             value={provider}
@@ -140,16 +205,18 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
             padding: "12px 20px",
             borderRadius: 12,
             border: "none",
-            background: !canRun || loading 
-              ? "#e2e8f0" 
-              : "linear-gradient(135deg, #1E3A8A 0%, #38BDF8 100%)",
+            background:
+              !canRun || loading
+                ? "#e2e8f0"
+                : "linear-gradient(135deg, #1E3A8A 0%, #38BDF8 100%)",
             color: !canRun || loading ? "#94a3b8" : "#fff",
             cursor: !canRun || loading ? "not-allowed" : "pointer",
             height: 44,
             fontWeight: 600,
             fontSize: "14px",
             transition: "all 0.2s ease",
-            boxShadow: !canRun || loading ? "none" : "0 2px 4px rgba(30, 58, 138, 0.2)",
+            boxShadow:
+              !canRun || loading ? "none" : "0 2px 4px rgba(30, 58, 138, 0.2)",
           }}
         >
           {loading ? "Estimating…" : "Estimate"}
@@ -181,27 +248,40 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
 
       <div style={{ marginTop: 12 }}>
         {res?.ok === false && (
-          <div style={{ 
-            border: "1px solid #ef4444", 
-            borderRadius: 14, 
-            padding: 16,
-            background: "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)"
-          }}>
+          <div
+            style={{
+              border: "1px solid #ef4444",
+              borderRadius: 14,
+              padding: 16,
+              background: "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)",
+            }}
+          >
             <div style={{ fontWeight: 700, color: "#dc2626" }}>Error</div>
             <div style={{ marginTop: 6, color: "#7f1d1d" }}>{res.error}</div>
-            <div style={{ marginTop: 8, fontSize: 12, opacity: 0.75, color: "#991b1b" }}>
-              Enable models by adding verified pricing in <code>lib/catalog/*</code> and setting <code>status: "active"</code>.
+            <div
+              style={{
+                marginTop: 8,
+                fontSize: 12,
+                opacity: 0.75,
+                color: "#991b1b",
+              }}
+            >
+              Enable models by adding verified pricing in{" "}
+              <code>lib/catalog/*</code> and setting{" "}
+              <code>status: "active"</code>.
             </div>
           </div>
         )}
 
         {res?.ok === true && (
-          <div style={{ 
-            border: "1px solid #38BDF8", 
-            borderRadius: 14, 
-            padding: 16,
-            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)"
-          }}>
+          <div
+            style={{
+              border: "1px solid #38BDF8",
+              borderRadius: 14,
+              padding: 16,
+              background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+            }}
+          >
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
               <Stat label="Input tokens" value={res.inputTokens} />
               <Stat label="Output tokens" value={res.expectedOutputTokens} />
@@ -229,7 +309,15 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
             </div>
 
             <div style={{ marginTop: 10, fontSize: 12, opacity: 0.75 }}>
-              Pricing source: <a href={res.pricing.officialSourceUrl} target="_blank" rel="noreferrer">official</a> • Verified: {res.pricing.lastVerified}
+              Pricing source:{" "}
+              <a
+                href={res.pricing.officialSourceUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                official
+              </a>{" "}
+              • Verified: {res.pricing.lastVerified}
             </div>
           </div>
         )}
@@ -238,7 +326,13 @@ export default function Estimator(props: { defaultProvider?: Provider; defaultMo
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <label style={{ display: "grid", gap: 6 }}>
       <div style={{ fontSize: 12, opacity: 0.7 }}>{label}</div>

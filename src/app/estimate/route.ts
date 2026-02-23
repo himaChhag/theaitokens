@@ -29,8 +29,28 @@ export async function POST(request: Request) {
     }
 
     const model = findModelByProviderAndId(provider, modelId);
-    const tokenResult = await countTokens({ provider, modelId, prompt });
-    const inputTokens = tokenResult.inputTokens;
+    console.log("🔍 MODEL FOUND:", { id: model.id, status: model.status });
+
+    // Try to count tokens with fallback
+    let tokenResult;
+    let inputTokens;
+    let countingMode: "exact" | "near-exact" | "estimate" = "estimate";
+    let confidenceNote: string | null = null;
+
+    try {
+      tokenResult = await countTokens({ provider, modelId, prompt });
+      inputTokens = tokenResult.inputTokens;
+      countingMode = tokenResult.countingMode;
+      confidenceNote = tokenResult.confidenceNote;
+      console.log("✅ TOKENS COUNTED:", { inputTokens, mode: countingMode });
+    } catch (tokenError) {
+      console.log("⚠️ TOKENIZER FAILED, using fallback:", tokenError);
+      // Fallback token estimation
+      const words = prompt.split(/\s+/).filter(word => word.length > 0);
+      inputTokens = Math.max(1, Math.ceil(prompt.length / 4)); // Basic char/4 estimation
+      countingMode = "estimate";
+      confidenceNote = "Using fallback estimation due to tokenizer error";
+    }
 
     const pricingReady = model.status === "active" && 
                         Array.isArray(model.pricingBands) && 
@@ -40,11 +60,17 @@ export async function POST(request: Request) {
     let costs: { inputCost: number; outputCost: number; totalCost: number } | null = null;
 
     if (pricingReady) {
-      band = pickBand(model.pricingBands, inputTokens);
-      costs = costFor(band, inputTokens, expectedOutputTokens);
+      try {
+        band = pickBand(model.pricingBands, inputTokens);
+        costs = costFor(band, inputTokens, expectedOutputTokens);
+        console.log("💰 COSTS:", costs);
+      } catch (pricingError) {
+        console.log("⚠️ PRICING FAILED:", pricingError);
+        // Continue without pricing
+      }
     }
 
-    return NextResponse.json({
+    const response = {
       ok: true,
       provider,
       modelId: model.id,
@@ -52,8 +78,8 @@ export async function POST(request: Request) {
       slug: model.slug,
       inputTokens,
       expectedOutputTokens,
-      countingMode: tokenResult.countingMode,
-      confidenceNote: tokenResult.confidenceNote ?? null,
+      countingMode,
+      confidenceNote,
       pricingReady,
       pricingBand: band,
       costs,
@@ -61,10 +87,13 @@ export async function POST(request: Request) {
         officialSourceUrl: model.officialSourceUrl,
         lastVerified: model.lastVerified,
       },
-    });
+    };
+
+    console.log("✅ SUCCESS RESPONSE");
+    return NextResponse.json(response);
 
   } catch (error: any) {
-    console.error("💥 ERROR:", error);
+    console.error("💥 CRITICAL ERROR:", error);
     return NextResponse.json({ ok: false, error: error?.message ?? "Unknown error" }, { status: 500 });
   }
 }
