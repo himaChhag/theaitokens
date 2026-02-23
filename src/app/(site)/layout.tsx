@@ -8,8 +8,10 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   metadataBase: new URL("https://theaitokens.com"),
   title: "theaitokens — Token Counter & Cost Calculator",
-  description: "Accurate token counts with provider-native counters + verified pricing.",
-  keywords: "AI tokens, token counter, cost calculator, OpenAI pricing, Claude pricing, Gemini pricing, GPT-4 cost, AI API pricing, GPT-5 pricing, Anthropic pricing, xAI Grok pricing, Meta Llama pricing",
+  description:
+    "Accurate token counts with provider-native counters + verified pricing.",
+  keywords:
+    "AI tokens, token counter, cost calculator, OpenAI pricing, Claude pricing, Gemini pricing, GPT-4 cost, AI API pricing, GPT-5 pricing, Anthropic pricing, xAI Grok pricing, Meta Llama pricing",
   authors: [{ name: "The AI Tokens" }],
   creator: "The AI Tokens",
   publisher: "The AI Tokens",
@@ -23,7 +25,8 @@ export const metadata: Metadata = {
     url: "https://theaitokens.com",
     siteName: "The AI Tokens",
     title: "theaitokens — Token Counter & Cost Calculator",
-    description: "Calculate AI token costs and compare pricing across 45+ models from 9 major providers. Free token counter and cost calculator.",
+    description:
+      "Calculate AI token costs and compare pricing across 45+ models from 9 major providers. Free token counter and cost calculator.",
     images: [
       {
         url: "/og-image.png",
@@ -36,7 +39,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "theaitokens — Token Counter & Cost Calculator",
-    description: "Calculate AI token costs and compare pricing across 45+ models from 9 major providers. Free token counter and cost calculator.",
+    description:
+      "Calculate AI token costs and compare pricing across 45+ models from 9 major providers. Free token counter and cost calculator.",
     images: ["/og-image.png"],
     creator: "@theaitokens",
   },
@@ -53,10 +57,9 @@ export default function SiteLayout({
     name: "The AI Tokens",
     url: "https://theaitokens.com",
     logo: "https://theaitokens.com/logo.svg",
-    description: "Comprehensive AI token counter and cost calculator for all major AI providers including OpenAI, Anthropic, Google, and more.",
-    sameAs: [
-      "https://github.com/theaitokens"
-    ]
+    description:
+      "Comprehensive AI token counter and cost calculator for all major AI providers including OpenAI, Anthropic, Google, and more.",
+    sameAs: ["https://github.com/theaitokens"],
   };
 
   const websiteJsonLd = {
@@ -64,12 +67,13 @@ export default function SiteLayout({
     "@type": "WebSite",
     name: "The AI Tokens",
     url: "https://theaitokens.com",
-    description: "Calculate AI token costs and compare pricing across 45+ models from 9 major providers. Free token counter and cost calculator.",
+    description:
+      "Calculate AI token costs and compare pricing across 45+ models from 9 major providers. Free token counter and cost calculator.",
     potentialAction: {
       "@type": "SearchAction",
       target: "https://theaitokens.com/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
+      "query-input": "required name=search_term_string",
+    },
   };
 
   const softwareApplicationJsonLd = {
@@ -81,15 +85,16 @@ export default function SiteLayout({
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "USD"
+      priceCurrency: "USD",
     },
-    description: "Free AI token counter and cost calculator supporting OpenAI GPT, Anthropic Claude, Google Gemini, and 6 other major AI providers.",
+    description:
+      "Free AI token counter and cost calculator supporting OpenAI GPT, Anthropic Claude, Google Gemini, and 6 other major AI providers.",
     featureList: [
       "Token counting for 45+ AI models",
       "Real-time cost calculation",
       "Provider comparison tools",
-      "Budget planning features"
-    ]
+      "Budget planning features",
+    ],
   };
 
   return (
@@ -101,10 +106,14 @@ export default function SiteLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="AI Tokens" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link rel="dns-prefetch" href="https://api.theaitokens.com" />
         <meta name="format-detection" content="telephone=no" />
-        
+
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
@@ -130,11 +139,23 @@ export default function SiteLayout({
 
         {/* Google AdSense */}
         {process.env.NEXT_PUBLIC_ADSENSE_ID && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
-            crossOrigin="anonymous"
-          />
+          <>
+            <script
+              async
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
+              crossOrigin="anonymous"
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  (adsbygoogle = window.adsbygoogle || []).push({
+                    google_ad_client: "${process.env.NEXT_PUBLIC_ADSENSE_ID}",
+                    enable_page_level_ads: true
+                  });
+                `,
+              }}
+            />
+          </>
         )}
       </head>
       <body>
