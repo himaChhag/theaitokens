@@ -21,8 +21,22 @@ export default function ClaudeTokenCounterPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>Claude Token Counter</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            Claude Token Counter
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Count tokens for all Claude models using Anthropic's native tokenizer. Get precise token counts for Opus, Sonnet, Haiku, 
             and all variants with accurate cost calculations based on official Anthropic pricing.
           </p>

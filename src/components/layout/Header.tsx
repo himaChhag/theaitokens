@@ -5,9 +5,14 @@ import Container from "./Container";
 export default function Header() {
   return (
     <header style={{ 
+      position: "sticky",
+      top: 0,
+      zIndex: 1000,
       borderBottom: "1px solid #e2e8f0",
       background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-      boxShadow: "0 1px 3px rgba(30, 58, 138, 0.1)"
+      boxShadow: "0 1px 3px rgba(30, 58, 138, 0.1)",
+      backdropFilter: "blur(8px)",
+      WebkitBackdropFilter: "blur(8px)"
     }}>
       <Container>
         <div

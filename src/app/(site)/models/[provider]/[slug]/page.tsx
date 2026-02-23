@@ -260,9 +260,9 @@ export default async function ModelPage(
           )}
           
           <Sidebar />
+          
+          <ModelSeoBody model={model} />
         </div>
-
-        <ModelSeoBody model={model} />
       </Container>
     </main>
   );

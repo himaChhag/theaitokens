@@ -21,8 +21,22 @@ export default function AITokenCostEstimatorPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>AI Token Cost Estimator</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            AI Token Cost Estimator
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Estimate token costs for any AI language model with precision. Calculate input and output tokens, 
             compare pricing across providers, and get accurate cost projections for your AI applications.
           </p>

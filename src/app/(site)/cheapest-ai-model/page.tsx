@@ -21,8 +21,22 @@ export default function CheapestAIModelPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>Cheapest AI Model</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            Cheapest AI Model
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Find the most cost-effective AI model for your specific use case. Compare pricing across all major providers 
             to identify the cheapest option that meets your quality and performance requirements.
           </p>

@@ -21,8 +21,22 @@ export default function GPTTokenCounterPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>GPT Token Counter</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            GPT Token Counter
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Count tokens for all GPT models using OpenAI's official tokenizer. Get precise token counts for GPT-4, GPT-4o, GPT-3.5, 
             and all variants with accurate cost calculations based on verified pricing.
           </p>

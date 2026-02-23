@@ -21,8 +21,22 @@ export default function AICostComparisonToolPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>AI Cost Comparison Tool</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            AI Cost Comparison Tool
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Compare AI model costs side-by-side with real-time calculations. Analyze pricing differences across all major providers 
             and find the best value for your specific use case and budget requirements.
           </p>

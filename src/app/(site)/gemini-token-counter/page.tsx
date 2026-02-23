@@ -21,8 +21,22 @@ export default function GeminiTokenCounterPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>Gemini Token Counter</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            Gemini Token Counter
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Count tokens for all Google Gemini models using the official tokenizer. Get precise token counts for Pro, Flash, 
             and all variants with real-time cost calculations based on verified Google AI pricing.
           </p>

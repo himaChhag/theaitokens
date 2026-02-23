@@ -132,10 +132,7 @@ export default function ModelSeoBody({ model }: Props) {
     <section style={{ 
       marginTop: 28, 
       display: "grid", 
-      gap: 24, 
-      maxWidth: 980,
-      margin: "28px auto 0 auto",
-      padding: "0 20px"
+      gap: 24
     }}>
       {/* 1. MOST IMPORTANT: Pricing Breakdown */}
       <div style={card}>

@@ -21,8 +21,22 @@ export default function EnterpriseAIPricingPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>Enterprise AI Pricing</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            Enterprise AI Pricing
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Calculate AI costs for enterprise-scale deployments. Estimate pricing for high-volume usage across all major providers 
             with considerations for bulk pricing, volume discounts, and enterprise-specific features.
           </p>

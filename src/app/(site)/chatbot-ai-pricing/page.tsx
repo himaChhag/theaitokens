@@ -21,8 +21,22 @@ export default function ChatbotAIPricingPage() {
     <main>
       <Container>
         <div style={{ padding: "22px 0 10px" }}>
-          <h1 style={{ fontSize: 30, margin: 0 }}>Chatbot AI Pricing</h1>
-          <p style={{ marginTop: 8, opacity: 0.8, maxWidth: 860 }}>
+          <h1 style={{ 
+            fontSize: 30, 
+            margin: 0, 
+            color: "#0F172A",
+            fontWeight: 700,
+            letterSpacing: -0.5
+          }}>
+            Chatbot AI Pricing
+          </h1>
+          <p style={{ 
+            marginTop: 12, 
+            opacity: 0.8, 
+            maxWidth: 860,
+            lineHeight: 1.6,
+            color: "#64748b"
+          }}>
             Calculate AI costs for chatbot and conversational applications. Estimate pricing for customer service bots, 
             support assistants, and interactive AI using models from OpenAI, Anthropic, and Google.
           </p>
