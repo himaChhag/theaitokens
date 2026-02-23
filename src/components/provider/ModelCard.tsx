@@ -57,7 +57,7 @@ export default function ModelCard({ model, provider }: Props) {
           lineHeight: 1.5,
           marginBottom: 16
         }}>
-          {model.description || `Pricing and token information for ${model.name}`}
+          {`Pricing and token information for ${model.name}`}
         </p>
         <div style={{
           display: "flex",
