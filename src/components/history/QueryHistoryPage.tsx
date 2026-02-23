@@ -123,12 +123,21 @@ export default function QueryHistoryPage() {
   };
 
   const loadQuery = (query: QueryHistoryItem) => {
-    // Navigate to token counter with query parameter
-    router.push(`/tools/token-counter?q=${query.id}`);
+    if (query.isComparison) {
+      // Navigate to model comparison with query parameter
+      router.push(`/tools/model-comparison?c=${query.id}`);
+    } else {
+      // Navigate to token counter with query parameter
+      router.push(`/tools/token-counter?q=${query.id}`);
+    }
   };
 
   const shareQuery = (query: QueryHistoryItem) => {
-    const url = `${window.location.origin}/tools/token-counter?q=${query.id}`;
+    const baseUrl = query.isComparison 
+      ? `/tools/model-comparison?c=${query.id}`
+      : `/tools/token-counter?q=${query.id}`;
+    const url = `${window.location.origin}${baseUrl}`;
+    
     navigator.clipboard.writeText(url).then(() => {
       alert('Query URL copied to clipboard!');
     }).catch(() => {

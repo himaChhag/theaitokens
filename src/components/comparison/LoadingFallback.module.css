@@ -1,0 +1,15 @@
+.loadingFallback {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+.loadingIcon {
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.loadingText {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

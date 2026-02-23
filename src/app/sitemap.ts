@@ -162,6 +162,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/learn`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${baseUrl}/tools/cost-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${baseUrl}/tools/token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${baseUrl}/tools/model-comparison`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${baseUrl}/tools/query-history`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
     ...providerPages,
     ...modelPages,

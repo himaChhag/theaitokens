@@ -93,6 +93,17 @@ export default function Header() {
               Calculator
             </Link>
             <Link
+              href="/tools/model-comparison"
+              style={{
+                padding: "8px 12px",
+                borderRadius: 8,
+                transition: "all 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Compare Models
+            </Link>
+            <Link
               href="/tools/query-history"
               style={{
                 padding: "8px 12px",
@@ -232,6 +243,26 @@ export default function Header() {
                 }
               >
                 Cost Calculator
+              </Link>
+              <Link
+                href="/tools/model-comparison"
+                onClick={() => setIsMenuOpen(false)}
+                style={{
+                  display: "block",
+                  padding: "12px 24px",
+                  fontSize: 16,
+                  fontWeight: 500,
+                  borderBottom: "1px solid #f1f5f9",
+                  transition: "background-color 0.2s ease",
+                }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#f8fafc")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
+              >
+                Model Comparison
               </Link>
               <Link
                 href="/tools/query-history"

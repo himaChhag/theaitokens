@@ -14,6 +14,33 @@ export interface QueryHistoryItem {
       totalCost: number;
     };
   };
+  // For model comparisons
+  isComparison?: boolean;
+  comparisonData?: {
+    models: Array<{
+      id: string;
+      provider: string;
+      modelId: string;
+      modelName: string;
+      expectedOutputTokens: number;
+    }>;
+    results?: Array<{
+      id: string;
+      provider: string;
+      modelId: string;
+      modelName: string;
+      status: 'loading' | 'success' | 'error';
+      inputTokens?: number;
+      outputTokens?: number;
+      costs?: {
+        inputCost: number;
+        outputCost: number;
+        totalCost: number;
+      };
+      responseTime?: number;
+      error?: string;
+    }>;
+  };
 }
 
 const MAX_HISTORY_ITEMS = 30;

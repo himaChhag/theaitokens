@@ -209,15 +209,38 @@ export default function QueryHistory({ onLoadQuery, currentQueryId, minimizedByD
                   lineHeight: 1.4,
                   marginBottom: 8,
                 }}>
-                  {truncatePrompt(item.prompt)}
+                  {item.isComparison ? (
+                    <div>
+                      <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                        🔄 Model Comparison ({item.comparisonData?.models?.length || 0} models)
+                      </div>
+                      <div style={{ fontSize: 12, opacity: 0.8 }}>
+                        {truncatePrompt(item.prompt)}
+                      </div>
+                    </div>
+                  ) : (
+                    truncatePrompt(item.prompt)
+                  )}
                 </div>
 
                 {item.result && (
                   <div style={{ display: "flex", gap: 12, fontSize: 11, color: "#64748b" }}>
-                    <span>Input: {item.result.inputTokens} tokens</span>
-                    <span>Output: {item.result.outputTokens} tokens</span>
-                    {item.result.costs && (
-                      <span>Cost: ${item.result.costs.totalCost}</span>
+                    {item.isComparison ? (
+                      <>
+                        <span>Models: {item.comparisonData?.models?.length || 0}</span>
+                        <span>Total Tokens: {item.result.inputTokens + item.result.outputTokens}</span>
+                        {item.result.costs && (
+                          <span>Total Cost: ${item.result.costs.totalCost.toFixed(6)}</span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <span>Input: {item.result.inputTokens} tokens</span>
+                        <span>Output: {item.result.outputTokens} tokens</span>
+                        {item.result.costs && (
+                          <span>Cost: ${item.result.costs.totalCost.toFixed(6)}</span>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
