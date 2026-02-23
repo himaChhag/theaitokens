@@ -38,13 +38,20 @@ export default function Header() {
           </Link>
 
           {/* Navigation */}
-          <nav style={{ display: "flex", gap: 20, fontSize: 14, fontWeight: 500 }}>
+          <nav style={{ 
+            display: "flex", 
+            gap: "clamp(8px, 2vw, 20px)", 
+            fontSize: 14, 
+            fontWeight: 500,
+            flexWrap: "wrap"
+          }}>
             <Link 
               href="/compare"
               style={{ 
-                padding: "8px 16px",
+                padding: "8px 12px",
                 borderRadius: 8,
                 transition: "all 0.2s ease",
+                whiteSpace: "nowrap"
               }}
             >
               Compare
@@ -52,9 +59,10 @@ export default function Header() {
             <Link 
               href="/learn"
               style={{ 
-                padding: "8px 16px",
+                padding: "8px 12px",
                 borderRadius: 8,
                 transition: "all 0.2s ease",
+                whiteSpace: "nowrap"
               }}
             >
               Learn
@@ -62,22 +70,24 @@ export default function Header() {
             <Link 
               href="/tools/token-counter"
               style={{ 
-                padding: "8px 16px",
+                padding: "8px 12px",
                 borderRadius: 8,
                 transition: "all 0.2s ease",
+                whiteSpace: "nowrap"
               }}
             >
-              Token Counter
+              Counter
             </Link>
             <Link 
               href="/tools/cost-calculator"
               style={{ 
-                padding: "8px 16px",
+                padding: "8px 12px",
                 borderRadius: 8,
                 transition: "all 0.2s ease",
+                whiteSpace: "nowrap"
               }}
             >
-              Cost Calculator
+              Calculator
             </Link>
           </nav>
         </div>
