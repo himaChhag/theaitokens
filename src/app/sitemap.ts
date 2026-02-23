@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { activeModels } from "@/lib/catalog";
 import { getAllComparisons } from "@/lib/comparisons";
+import { getAllArticles } from "@/lib/learn";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://theaitokens.com";
@@ -30,14 +31,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/google`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.95 },
   ];
 
+  // Learn articles
+  const learnPages = getAllArticles().map((article) => ({
+    url: `${baseUrl}/learn/${article.slug}`,
+    lastModified: new Date(article.updatedAt || article.publishedAt),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   // keep any existing entries you already include here as well (home/tools/etc)
   return [
     { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
     { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${baseUrl}/learn`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${baseUrl}/tools/cost-calculator`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${baseUrl}/tools/token-counter`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     ...providerPages,
     ...modelPages,
     ...comparisonPages,
+    ...learnPages,
   ];
 }

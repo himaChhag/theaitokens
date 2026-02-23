@@ -45,6 +45,16 @@ export default function Header() {
               Compare
             </Link>
             <Link 
+              href="/learn"
+              style={{ 
+                padding: "8px 16px",
+                borderRadius: 8,
+                transition: "all 0.2s ease",
+              }}
+            >
+              Learn
+            </Link>
+            <Link 
               href="/tools/token-counter"
               style={{ 
                 padding: "8px 16px",
@@ -63,16 +73,6 @@ export default function Header() {
               }}
             >
               Cost Calculator
-            </Link>
-            <Link 
-              href="/learn/what-is-a-token"
-              style={{ 
-                padding: "8px 16px",
-                borderRadius: 8,
-                transition: "all 0.2s ease",
-              }}
-            >
-              Learn
             </Link>
           </nav>
         </div>
