@@ -309,9 +309,17 @@ export default function Estimator(props: {
             <div style={{ marginTop: 10, fontSize: 12, opacity: 0.8 }}>
               Token count mode: <b>{res.countingMode}</b>
               {res.confidenceNote ? (
-                <span style={{ display: "block", marginTop: 4, opacity: 0.8 }}>
-                  Note: {res.confidenceNote}
-                </span>
+                <div style={{ 
+                  marginTop: 6, 
+                  padding: 8, 
+                  background: "rgba(59, 130, 246, 0.1)", 
+                  borderRadius: 8, 
+                  fontSize: 11,
+                  color: "#1e40af",
+                  border: "1px solid rgba(59, 130, 246, 0.2)"
+                }}>
+                  <strong>Tokenization:</strong> {res.confidenceNote}
+                </div>
               ) : null}
             </div>
 
