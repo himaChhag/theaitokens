@@ -62,8 +62,15 @@ export default function Estimator(props: {
         ? props.defaultModelId
         : first?.id ?? ""
     );
+    // Reset loading state when provider changes
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider]);
+
+  // Reset loading state when model changes
+  useEffect(() => {
+    setLoading(false);
+  }, [modelId]);
 
   const canRun = modelId && prompt.trim().length > 0;
 
@@ -71,74 +78,84 @@ export default function Estimator(props: {
     setLoading(true);
     setRes(null);
 
-    // Try multiple endpoints in order
-    const endpoints = ["/api/estimate", "/api/simple-estimate", "/api/debug"];
+    try {
+      // Try multiple endpoints in order
+      const endpoints = ["/api/estimate", "/api/simple-estimate", "/api/debug"];
 
-    for (const endpoint of endpoints) {
-      try {
-        console.log(`Trying endpoint: ${endpoint}`);
-
-        const r = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            provider,
-            modelId,
-            prompt,
-            expectedOutputTokens,
-          }),
-        });
-
-        console.log(`Response status: ${r.status}`);
-
-        if (r.status === 405) {
-          console.log(`405 error on ${endpoint}, trying next...`);
-          continue; // Try next endpoint
-        }
-
-        const text = await r.text();
-        console.log(`Response text length: ${text.length}`);
-
-        let j: any;
+      for (const endpoint of endpoints) {
         try {
-          j = JSON.parse(text);
-        } catch {
-          console.log(`JSON parse failed for ${endpoint}`);
+          console.log(`Trying endpoint: ${endpoint}`);
+
+          const r = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider,
+              modelId,
+              prompt,
+              expectedOutputTokens,
+            }),
+          });
+
+          console.log(`Response status: ${r.status}`);
+
+          if (r.status === 405) {
+            console.log(`405 error on ${endpoint}, trying next...`);
+            continue; // Try next endpoint
+          }
+
+          const text = await r.text();
+          console.log(`Response text length: ${text.length}`);
+
+          let j: any;
+          try {
+            j = JSON.parse(text);
+          } catch {
+            console.log(`JSON parse failed for ${endpoint}`);
+            if (endpoints.indexOf(endpoint) === endpoints.length - 1) {
+              // Last endpoint failed
+              throw new Error(
+                `API returned non-JSON (${r.status} ${r.statusText}). ` +
+                  `First 200 chars: ${text.slice(0, 200)}`
+              );
+            }
+            continue; // Try next endpoint
+          }
+
+          console.log(`Success with ${endpoint}`);
+          setRes(j);
+          return; // Success, exit function
+        } catch (e: any) {
+          console.log(`Error with ${endpoint}:`, e.message);
           if (endpoints.indexOf(endpoint) === endpoints.length - 1) {
             // Last endpoint failed
-            throw new Error(
-              `API returned non-JSON (${r.status} ${r.statusText}). ` +
-                `First 200 chars: ${text.slice(0, 200)}`
-            );
+            setRes({
+              ok: false,
+              error: `All endpoints failed. Last error: ${
+                e?.message ?? "Network error"
+              }`,
+            });
+            return;
           }
           continue; // Try next endpoint
         }
-
-        console.log(`Success with ${endpoint}`);
-        setRes(j);
-        return; // Success, exit function
-      } catch (e: any) {
-        console.log(`Error with ${endpoint}:`, e.message);
-        if (endpoints.indexOf(endpoint) === endpoints.length - 1) {
-          // Last endpoint failed
-          setRes({
-            ok: false,
-            error: `All endpoints failed. Last error: ${
-              e?.message ?? "Network error"
-            }`,
-          });
-          return;
-        }
-        continue; // Try next endpoint
       }
-    }
 
-    // If we get here, all endpoints failed
-    setRes({
-      ok: false,
-      error: "All API endpoints are unavailable (405 errors)",
-    });
-    setLoading(false);
+      // If we get here, all endpoints failed
+      setRes({
+        ok: false,
+        error: "All API endpoints are unavailable (405 errors)",
+      });
+    } catch (error: any) {
+      // Catch any unexpected errors
+      setRes({
+        ok: false,
+        error: `Unexpected error: ${error?.message ?? "Unknown error"}`,
+      });
+    } finally {
+      // Always reset loading state
+      setLoading(false);
+    }
   }
 
   return (
