@@ -9,6 +9,7 @@ interface ComparisonResultsProps {
 export default function ComparisonResults({ results }: ComparisonResultsProps) {
   return (
     <div
+      data-testid="comparison-results"
       style={{
         background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
         border: "1px solid #e2e8f0",

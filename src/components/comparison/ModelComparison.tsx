@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import type { Provider } from "@/lib/catalog/types";
 import { CATALOG, modelsByProvider } from "@/lib/catalog";
 import { QueryHistoryCache } from "@/lib/cache/queryHistory";
+import { aggregateResults } from "@/lib/comparison/utils";
 import ModelSelector from "./ModelSelector";
 import ComparisonResults from "./ComparisonResults";
 import ComparisonSummary from "./ComparisonSummary";
@@ -34,54 +35,6 @@ export interface ComparisonResult {
   error?: string;
   countingMode?: string;
   confidenceNote?: string;
-}
-
-interface AggregatedResults {
-  inputTokens: number;
-  outputTokens: number;
-  costs?: {
-    inputCost: number;
-    outputCost: number;
-    totalCost: number;
-  };
-}
-
-function aggregateResults(results: ComparisonResult[]): AggregatedResults {
-  const successResults = results.filter(r => r.status === 'success');
-  
-  if (successResults.length === 0) {
-    return {
-      inputTokens: 0,
-      outputTokens: 0,
-      costs: undefined,
-    };
-  }
-
-  const totals = successResults.reduce((acc, result) => ({
-    inputTokens: acc.inputTokens + (result.inputTokens || 0),
-    outputTokens: acc.outputTokens + (result.outputTokens || 0),
-    inputCost: acc.inputCost + (result.costs?.inputCost || 0),
-    outputCost: acc.outputCost + (result.costs?.outputCost || 0),
-    totalCost: acc.totalCost + (result.costs?.totalCost || 0),
-  }), { 
-    inputTokens: 0, 
-    outputTokens: 0, 
-    inputCost: 0, 
-    outputCost: 0, 
-    totalCost: 0 
-  });
-
-  const hasCosts = successResults.some(r => r.costs);
-  
-  return {
-    inputTokens: totals.inputTokens,
-    outputTokens: totals.outputTokens,
-    costs: hasCosts ? {
-      inputCost: totals.inputCost,
-      outputCost: totals.outputCost,
-      totalCost: totals.totalCost,
-    } : undefined,
-  };
 }
 
 export default function ModelComparison() {
